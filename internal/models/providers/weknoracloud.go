@@ -48,7 +48,7 @@ import (
 	"github.com/google/uuid"
 )
 
-//go:embed assets/weknoracloud.svg
+//go:embed assets/opccloud.svg
 var weKnoraCloudIcon []byte
 
 // WeKnoraCloudID is the provider identifier stored on model rows.
@@ -61,10 +61,10 @@ const WeKnoraCloudBaseURL = "https://weknora.weixin.qq.com"
 func newWeKnoraCloudProvider() *Definition {
 	return &Definition{
 		ID:           WeKnoraCloudID,
-		Name:         "WeKnora Cloud",
-		Names:        map[string]string{"zh-CN": "WeKnora 云服务"},
-		Description:  "WeKnora managed models: chat, embedding, rerank, vlm",
-		Descriptions: map[string]string{"zh-CN": "WeKnora云服务，模型：chat, embedding, rerank, vlm"},
+		Name:         "OPC Cloud",
+		Names:        map[string]string{"zh-CN": "OPC 云服务"},
+		Description:  "OPC managed models: chat, embedding, rerank, vlm",
+		Descriptions: map[string]string{"zh-CN": "OPC云服务，模型：chat, embedding, rerank, vlm"},
 		Website:      WeKnoraCloudBaseURL,
 		Icon:         weKnoraCloudIcon,
 		API:          api.APIOpenAICompletions,

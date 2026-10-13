@@ -97,7 +97,7 @@
 
     <!-- Logo - Top Left -->
     <a href="https://github.com/Tencent/WeKnora" target="_blank" class="header-logo" :title="$t('common.github')">
-      <img src="@/assets/img/weknora.png" alt="WeKnora" class="logo-image" />
+      <img src="@/assets/img/opc-logo.png" alt="OPC" class="logo-image" />
     </a>
 
     <!-- Header Links - Top Right -->
@@ -1197,6 +1197,7 @@ onMounted(async () => {
   .logo-image {
     width: 120px;
     height: auto;
+    filter: invert(1) hue-rotate(180deg) brightness(1.1);
   }
 }
 

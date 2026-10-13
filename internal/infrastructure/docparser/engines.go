@@ -173,7 +173,7 @@ func (e *weKnoraCloudEngine) CheckAvailable(_ bool, overrides map[string]string)
 	if overrides["weknoracloud_app_id"] != "" {
 		return true, ""
 	}
-	return false, "WeKnora Cloud credentials not configured. Go to Settings → WeKnora Cloud to set up."
+	return false, "OPC Cloud credentials not configured. Go to Settings → OPC Cloud to set up."
 }
 
 func (e *weKnoraCloudEngine) NewReader(

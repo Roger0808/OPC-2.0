@@ -13,11 +13,11 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 cd "${ROOT_DIR}"
 
-APP_NAME="WeKnora Lite"
+APP_NAME="OPC Lite"
 APP_BUNDLE="${APP_NAME}.app"
 DIST_DIR="dist/${APP_BUNDLE}"
 
-echo "=== WeKnora Mac App Packager ==="
+echo "=== OPC Mac App Packager ==="
 echo "  Output: dist/${APP_BUNDLE}"
 echo ""
 

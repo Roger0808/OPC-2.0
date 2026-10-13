@@ -243,7 +243,7 @@ func (m *Manager) DownloadExtension(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/zip")
-	w.Header().Set("Content-Disposition", `attachment; filename="browser-skill-weknora.zip"`)
+	w.Header().Set("Content-Disposition", `attachment; filename="browser-skill-opc.zip"`)
 	w.Header().Set("Cache-Control", "no-store")
 	http.ServeFile(w, r, p)
 }
