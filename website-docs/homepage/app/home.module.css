@@ -42,16 +42,7 @@
 .videoTop > span { display: inline-flex; align-items: center; gap: 10px; }
 .videoDot { margin-inline: 5px; color: var(--gold); }
 .videoStage { position: relative; aspect-ratio: 16 / 8.5; background: #14191e; }
-.videoStage video { width: 100%; height: 100%; display: block; object-fit: contain; }
-.videoCover { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; background: linear-gradient(180deg, rgba(18,22,26,.24), rgba(18,22,26,.6)); transition: background .2s; }
-.playCircle { width: 82px; height: 82px; display: flex; align-items: center; justify-content: center; background: #fdfcfa; color: #101f38; border-radius: 50%; box-shadow: 0 4px 24px #0002; transition: transform .2s; }
-.playCircle svg { width: 29px; height: 29px; transform: translateX(-2px); fill: #101f38; stroke-width: 0; }
-.videoCover:hover .playCircle { transform: scale(1.08); }
-.videoCoverTitle { font-size: clamp(18px, 2vw, 30px); font-weight: 500; letter-spacing: .07em; margin-top: 24px; }
-.videoCoverHint { font-size: 14px; margin-top: 8px; color: #eee8dc; }
-.videoError { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--paper2); color: var(--ink); gap: 18px; }
-.videoError a { display: inline-flex; gap: 8px; align-items: center; text-decoration: underline; }
-.videoError svg { width: 18px; height: 18px; }
+.videoStage img { width: 100%; height: 100%; display: block; object-fit: contain; }
 .videoCaption { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 14px 22px; font-size: 13px; color: var(--soft); }
 .videoCaption a { color: var(--mute); display: inline-flex; align-items: center; gap: 9px; }
 .videoCaption svg { height: 14px; width: 14px; }
@@ -244,10 +235,6 @@
   .videoTop > span { gap: 6px; }
   .videoTop > span:last-child { display: none; }
   .videoDot { margin: 0; }
-  .playCircle { height: 52px; width: 52px; }
-  .playCircle svg { width: 22px; height: 22px; }
-  .videoCoverTitle { font-size: 17px; margin-top: 13px; }
-  .videoCoverHint { font-size: 12px; margin-top: 4px; }
   .trustBar { font-size: 12px; gap: 13px; }
   .trustBar span { gap: 7px; }
   .section { padding-block: 60px; }

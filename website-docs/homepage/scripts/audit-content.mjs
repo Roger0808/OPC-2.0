@@ -12,8 +12,8 @@ for (const term of ['帮你找到答案', '并将知识付诸实践', 'v0.8.2', 
 for (const term of ['三套', '方案选择', '历史 Demo', '18K+', '成为行动力', '从零散文档', '到鲜活知识']) {
   assert.ok(!visible.includes(term), `Retired content still visible: ${term}`);
 }
-assert.match(html, /<video[^>]+preload="none"/, 'Video should not load before user interaction');
-assert.match(html, /https:\/\/github.com\/user-attachments\/assets\/2819598d-3140-4623-814a-8162a22b653c/, 'Use the README video');
+assert.match(html, /OPC PREVIEW/, 'Show the current OPC interface');
+assert.ok(!html.includes("2819598d-3140-4623-814a-8162a22b653c"), 'Retire the legacy product video');
 assert.ok(!/<video[^>]+autoplay/i.test(html), 'Do not autoplay the product film');
 const wiki = html.match(/<section id="wiki"[\s\S]*?<\/section>/)?.[0];
 assert.ok(wiki, 'The homepage must include a dedicated Wiki section');
@@ -36,5 +36,5 @@ const pendingShots = [...html.matchAll(/website-docs\/homepage\/public(\/docs\/_
 for (const [, image] of html.matchAll(/\\?"image\\?":\\?"([\w-]+)\\?"[^{}]*?\\?"available\\?":false/g)) pendingShots.push(`/docs/_home/product/${image}.png`);
 if (pendingShots.length) console.warn(`Product screenshots still pending (placeholder shown): ${[...new Set(pendingShots)].join(', ')}`);
 assert.match(html, /aria-controls="main-navigation"/);
-assert.match(html, /aria-label="播放 WeKnora 产品介绍视频/);
-console.log(`Homepage audit passed: product content, README video, navigation anchors, ${assets.size} local assets, and retired design choices.`);
+assert.match(html, /alt="OPC 智能体会话/);
+console.log(`Homepage audit passed: product content, current OPC preview, navigation anchors, ${assets.size} local assets, and retired design choices.`);

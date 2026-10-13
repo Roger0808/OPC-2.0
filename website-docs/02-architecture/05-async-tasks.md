@@ -4,7 +4,7 @@
 
 ## 总体架构：双执行模式 {#_1-总体架构-双执行模式}
 
-WeKnora 有两种任务执行模式，通过部署形态选择：
+OPC 有两种任务执行模式，通过部署形态选择：
 
 - **asynq 模式（标准部署）**：任务经 `asynq.Client` 序列化为 JSON payload 写入 Redis 队列，由多个独立的 `asynq.Server`（worker pool）消费。`internal/router/task.go` 中 `RunAsynqServer()` 构建统一的 `asynq.ServeMux` 并在 6 个 pool 上运行。
 - **Lite 模式（单机 / macOS App，无 Redis）**：`internal/router/sync_task.go` 的 `SyncTaskExecutor` 实现同一个 `interfaces.TaskEnqueuer` 接口，`Enqueue` 直接把任务派发到 goroutine 执行，支持 `ProcessIn` / `ProcessAt`（延迟）、`MaxRetry`、`Timeout` 与 `Deadline` 选项，写在 `asynq.NewTask` 或 `Enqueue` 上都生效（后者优先）。没有设置超时的任务不限时，这一点与 asynq 默认 30 分钟不同。重试为线性退避（`attempt * 5s`，上限 30s），返回 `asynq.SkipRetry` 的任务不再重试。handler 内的 panic 会被捕获并按失败处理，不会导致进程退出。重试耗尽后执行与标准模式死信回调相同的收尾：文档类任务会把知识标为 `failed`。

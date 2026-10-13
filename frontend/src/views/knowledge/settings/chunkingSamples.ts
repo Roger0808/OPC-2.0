@@ -60,7 +60,7 @@ OPC 是一个基于 LLM 的开源企业知识框架，集 RAG 问答、ReAct 智
 ### 启动命令
 
 \`\`\`bash
-git clone https://github.com/Tencent/OPC && cd OPC
+git clone https://github.com/Tencent/WeKnora OPC && cd OPC
 cp .env.example .env       # 修改你的模型与数据库配置
 make dev-start             # 启动 postgres / redis / qdrant
 make dev-app               # 启动后端，热重载
@@ -119,9 +119,9 @@ const FAQ_SAMPLE = `# OPC 部署与使用 FAQ
 官方镜像通过 daocloud 加速分发：
 
 \`\`\`
-docker pull docker.m.daocloud.io/wechatopenai/opc-app:v0.5.0
-docker pull docker.m.daocloud.io/wechatopenai/opc-docreader:v0.5.0
-docker pull docker.m.daocloud.io/wechatopenai/opc-ui:v0.5.0
+docker pull docker.m.daocloud.io/wechatopenai/weknora-app:v0.5.0
+docker pull docker.m.daocloud.io/wechatopenai/weknora-docreader:v0.5.0
+docker pull docker.m.daocloud.io/wechatopenai/weknora-ui:v0.5.0
 \`\`\`
 
 ### Q2: 启动后访问 5173 显示旧界面？

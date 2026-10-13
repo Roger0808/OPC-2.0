@@ -1,8 +1,8 @@
 # Claw Skill
 
-Claw Skill 为 OpenClaw 生态中的智能体提供 WeKnora 接入能力，通过 REST API 上传文档、导入网页和执行跨库检索。
+Claw Skill 为 OpenClaw 生态中的智能体提供 OPC 接入能力，通过 REST API 上传文档、导入网页和执行跨库检索。
 
-技能托管在 ClawHub，包名为 [`@lyingbug/weknora`](https://clawhub.ai/lyingbug/weknora)，许可证为 MIT-0。调用能力与权限由所连接的 WeKnora API 决定。
+技能托管在 ClawHub，包名为 [`@lyingbug/weknora`](https://clawhub.ai/lyingbug/weknora)，许可证为 MIT-0。调用能力与权限由所连接的 OPC API 决定。
 
 ## 主要功能 {#能做什么}
 

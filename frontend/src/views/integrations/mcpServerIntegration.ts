@@ -26,9 +26,9 @@ export function mcpServerKey(name: string, id = ''): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-  if (slug) return `weknora-${slug}`
+  if (slug) return `opc-${slug}`
   const idSlug = (id || '').replace(/[^a-z0-9]/gi, '').slice(0, 8).toLowerCase()
-  return idSlug ? `weknora-${idSlug}` : 'weknora'
+  return idSlug ? `opc-${idSlug}` : 'opc'
 }
 
 /** JSON block for clients that speak Streamable HTTP natively (Cursor, VS Code, Claude Desktop connectors). */

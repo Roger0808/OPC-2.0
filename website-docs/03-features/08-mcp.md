@@ -1,18 +1,18 @@
 # MCP（Model Context Protocol）集成
 
-MCP 用于智能体与外部工具之间的连接。WeKnora 支持接入外部 MCP 服务，也提供独立 MCP Server 供其他客户端调用：
+MCP 用于智能体与外部工具之间的连接。OPC 支持接入外部 MCP 服务，也提供独立 MCP Server 供其他客户端调用：
 
-1. **WeKnora 作为 MCP 客户端**：在「工具箱 → MCP服务」中接入任意外部 MCP server（SSE / Streamable HTTP），其工具通过目录按需加载，供 Agent 在对话中调用。支持 API Key / Bearer / OAuth 2.0（含动态客户端注册与 PKCE）三种认证策略、按工具粒度的启停与人工审批，以及会话内（in-conversation）OAuth 授权。
-2. **WeKnora 作为 MCP Server**：在「设置 → 发布集成 → MCP Server」中为当前空间创建一个或多个 MCP 端点，每个端点有独立的令牌、知识库范围和工具清单，Claude Desktop、Cursor、Claude Code、VS Code Copilot 等 MCP 客户端通过 Streamable HTTP 直接连接，无需额外部署进程。仓库 `mcp-server/` 目录下的 Python 服务是旧方案，已标记弃用。
+1. **OPC 作为 MCP 客户端**：在「工具箱 → MCP服务」中接入任意外部 MCP server（SSE / Streamable HTTP），其工具通过目录按需加载，供 Agent 在对话中调用。支持 API Key / Bearer / OAuth 2.0（含动态客户端注册与 PKCE）三种认证策略、按工具粒度的启停与人工审批，以及会话内（in-conversation）OAuth 授权。
+2. **OPC 作为 MCP Server**：在「设置 → 发布集成 → MCP Server」中为当前空间创建一个或多个 MCP 端点，每个端点有独立的令牌、知识库范围和工具清单，Claude Desktop、Cursor、Claude Code、VS Code Copilot 等 MCP 客户端通过 Streamable HTTP 直接连接，无需额外部署进程。仓库 `mcp-server/` 目录下的 Python 服务是旧方案，已标记弃用。
 
-接入外部服务可扩展 WeKnora 智能体的工具；运行 WeKnora MCP Server 可让外部客户端使用知识库检索、问答和管理能力。
+接入外部服务可扩展 OPC 智能体的工具；运行 OPC MCP Server 可让外部客户端使用知识库检索、问答和管理能力。
 
 空间 Admin 在侧边栏「工具箱 → MCP服务」新建服务（旧的「设置 → MCP 服务」链接会自动跳转到这里），填好连接后同步工具并写使用说明，再在智能体中选择所需服务。需要控制写入或外发操作时，可为相应工具开启人工审批，调用前会显示确认卡片。
 
 <Screenshot
   src="/screenshots/mcp-services.png"
-  caption="MCP 服务配置：连接外部工具服务与工具清单"
-  hint="展示 MCP 服务列表、某个服务的配置表单（URL、认证方式）与连通性测试后发现的工具列表。" />
+  caption="MCP 服务：停用的演示服务与添加入口"
+  hint="当前 OPC 本地界面截图；演示资料为虚构数据，不代表模型、沙箱或外部服务的执行结果。" />
 
 连接方式、认证配置和工具范围如下。
 
@@ -27,18 +27,18 @@ MCP 管理页支持按服务名称和卡片显示的用途说明搜索。搜索�
 1. **连接配置**：填写名称和服务 URL，选择 SSE 或 Streamable HTTP 传输，并配置认证（无 / 自定义 Header、API Key / Token、OAuth 2.0）和超时、重试。也可以用「从代码导入」粘贴标准 `mcpServers` JSON 自动填表；只含 `command` / `args` 的 stdio 配置不支持。保存后可测试连接；OAuth 服务点「去授权」时会先自动保存，再按当前用户发起授权。
 2. **工具与用途说明**：连接并拉取 Tools，系统会保存完整的工具描述和参数定义；再填写「使用说明」，说明服务用途、适用场景和关键约束。已同步工具后可点「AI 生成」，根据已启用的工具生成一段精简说明，检查后保存。工具列表中可逐个设置「启用工具」和「调用需审批」，修改即时生效，刷新目录不会覆盖这些设置。
 
-模型先读取服务的使用说明，再按需加载具体工具，所以使用说明直接影响 Agent 能否选对服务。OAuth 服务按调用者分别授权。工具需要审批时，在对话中检查参数并确认；单独停用某个工具后，运行时不会执行该工具。WeKnora 的 MCP 客户端不支持 stdio 传输。
+模型先读取服务的使用说明，再按需加载具体工具，所以使用说明直接影响 Agent 能否选对服务。OAuth 服务按调用者分别授权。工具需要审批时，在对话中检查参数并确认；单独停用某个工具后，运行时不会执行该工具。OPC 的 MCP 客户端不支持 stdio 传输。
 
 ## 供外部客户端调用
 
 在「设置 → 发布集成 → MCP Server」新建端点：填写名称、选择可访问的知识库（留空为全部）、勾选要暴露的工具，并按需指定 `ask` 使用的默认 Agent（留空时使用内置快速问答）和每分钟调用上限（默认 60 次）。创建后会一次性展示令牌和地址 `/mcp/<endpoint_id>`，页面同时给出 Cursor / VS Code / Claude Desktop 的 `mcpServers` 配置、Claude Code 的一行命令，以及仅支持 stdio 的客户端通过 `mcp-remote` 桥接的写法。
 
-使用自定义反向代理时，除 `/api/` 外，还需将 `/mcp/` 原路径转发到 WeKnora 后端，保留 `Authorization` 和 MCP 协议头，并关闭响应缓冲、为长连接设置足够的读写超时。仓库自带的 Nginx、Vite 开发及预览配置已包含该代理，可直接使用网站域名连接，无需另行暴露后端 8080 端口。
+使用自定义反向代理时，除 `/api/` 外，还需将 `/mcp/` 原路径转发到 OPC 后端，保留 `Authorization` 和 MCP 协议头，并关闭响应缓冲、为长连接设置足够的读写超时。仓库自带的 Nginx、Vite 开发及预览配置已包含该代理，可直接使用网站域名连接，无需另行暴露后端 8080 端口。
 
 <Screenshot
   src="/screenshots/mcp-server-endpoint.png"
-  caption="发布集成 → MCP Server：端点创建完成后的地址、令牌与客户端配置"
-  hint="新建端点后的结果页：一次性令牌与 /mcp/<endpoint_id> 地址、Cursor / Claude Desktop 的 mcpServers 配置与 Claude Code 命令；背景可见端点的知识库范围与四组工具勾选。" />
+  caption="MCP Server：已停用的演示端点与新建入口"
+  hint="当前 OPC 本地界面截图；演示资料为虚构数据，不代表模型、沙箱或外部服务的执行结果。" />
 
 一个空间可以创建多个端点。例如给客服团队一个只开检索和问答、只看两个知识库的端点，给内容团队另一个开了写入工具的端点。令牌可随时轮换，端点可随时停用，删除端点后使用它的客户端立即断开。
 
@@ -63,14 +63,14 @@ MCP 管理页支持按服务名称和卡片显示的用途说明搜索。搜索�
 
 ## 接入方式对照 {#两个方向的对照速览}
 
-| 维度 | WeKnora 作为 MCP 客户端 | WeKnora 作为 MCP Server |
+| 维度 | OPC 作为 MCP 客户端 | OPC 作为 MCP Server |
 |---|---|---|
 | 代码位置 | `internal/mcp/` + handler/service/repository + `internal/agent/tools/` | `internal/mcpserver/` + `internal/middleware/mcp_endpoint_auth.go` + `internal/handler/mcp_endpoint.go` |
 | 协议库 | `github.com/mark3labs/mcp-go`（client） | `github.com/mark3labs/mcp-go`（server，Streamable HTTP，无状态模式） |
 | 传输 | SSE、Streamable HTTP（stdio 因安全禁用） | Streamable HTTP；stdio 客户端用 `mcp-remote` 桥接 |
 | 认证 | API Key / Bearer / OAuth 2.0（DCR + PKCE，token AES 加密、按 principal 隔离） | 入站 `Authorization: Bearer mcp_…`，每个端点独立令牌（SHA-256 存储，可轮换） |
 | 安全控制 | 工具级人工审批、SSRF 校验、不可信输出前缀、DTO 级密钥隔离 | 端点级工具白名单（列表与调用双重校验）、知识库范围、每分钟限流、令牌只展示一次 |
-| 消费者 | WeKnora Agent（对话中自动调用） | Claude Desktop / Cursor / Claude Code / VS Code Copilot 等任意 MCP 客户端 |
+| 消费者 | OPC Agent（对话中自动调用） | Claude Desktop / Cursor / Claude Code / VS Code Copilot 等任意 MCP 客户端 |
 
 ## 配置与实现参考
 
@@ -187,7 +187,7 @@ type MCPService struct {
 `Initialize` 握手中客户端标识为：
 
 ```go
-ClientInfo: mcp.Implementation{ Name: "WeKnora", Version: "1.0.0" }
+ClientInfo: mcp.Implementation{ Name: "OPC", Version: "1.0.0" }
 ```
 
 #### REST API 端点 {#_1-5-rest-api-端点}
@@ -230,7 +230,7 @@ PUT body 中字段为指针语义：**缺省 = 保留原值**，**空字符串 =
 
 #### OAuth 2.0 授权全流程 {#_1-6-oauth-2-0-授权全流程}
 
-当 MCP server 要求 OAuth（`auth_type: "oauth"`）时，WeKnora 实现了完整的授权码流程：**RFC 9728 / RFC 8414 发现 → RFC 7591 动态客户端注册 → Authorization Code + PKCE → token 加密持久化 → 带分布式租约的自动刷新**。token 按 `(tenant_id, principal_type, principal_id, service_id)` 维度隔离——同一服务，每个用户（或 embed 访客、IM 用户等 principal，见 `internal/types/principal.go`）都持有自己的 token。
+当 MCP server 要求 OAuth（`auth_type: "oauth"`）时，OPC 实现了完整的授权码流程：**RFC 9728 / RFC 8414 发现 → RFC 7591 动态客户端注册 → Authorization Code + PKCE → token 加密持久化 → 带分布式租约的自动刷新**。token 按 `(tenant_id, principal_type, principal_id, service_id)` 维度隔离——同一服务，每个用户（或 embed 访客、IM 用户等 principal，见 `internal/types/principal.go`）都持有自己的 token。
 
 ##### 授权时序
 
@@ -238,8 +238,8 @@ PUT body 中字段为指针语义：**缺省 = 保留原值**，**空字符串 =
 sequenceDiagram
     autonumber
     participant B as "用户浏览器"
-    participant FE as "WeKnora 前端"
-    participant BE as "WeKnora 后端（OAuthManager）"
+    participant FE as "OPC 前端"
+    participant BE as "OPC 后端（OAuthManager）"
     participant ST as "State 存储（Redis / 内存，TTL 10 分钟）"
     participant AS as "OAuth 授权服务器"
     participant DB as "PostgreSQL（mcp_oauth_clients / mcp_oauth_tokens）"
@@ -247,7 +247,7 @@ sequenceDiagram
     FE->>BE: "POST /mcp-services/{id}/oauth/authorize-url<br/>{redirect_uri, frontend_redirect}"
     BE->>AS: "元数据发现（AuthServerMetadataURL 或按 RFC 9728/8414 自动发现）"
     alt "该服务尚无已注册客户端"
-        BE->>AS: "RFC 7591 动态客户端注册（client_name = WeKnora）"
+        BE->>AS: "RFC 7591 动态客户端注册（client_name = OPC）"
         AS-->>BE: "client_id（可含 client_secret）"
         BE->>DB: "SaveClient：按（tenant, service）持久化，secret AES 加密"
     end
@@ -272,7 +272,7 @@ sequenceDiagram
 
 ##### 流程要点（对应源码）
 
-- **发现与动态注册**（`internal/mcp/oauth_manager.go`）：`StartAuthorization` 先构造 `transport.OAuthHandler`（`AuthServerMetadataURL` 为空时由 mcp-go 依据 MCP URL 自动发现授权服务器）；若 `mcp_oauth_clients` 表中该 `(tenant, service)` 尚无客户端，调用 `h.RegisterClient(ctx, "WeKnora")` 做一次性 RFC 7591 注册并 `SaveClient` 持久化，之后所有用户复用同一 client_id。
+- **发现与动态注册**（`internal/mcp/oauth_manager.go`）：`StartAuthorization` 先构造 `transport.OAuthHandler`（`AuthServerMetadataURL` 为空时由 mcp-go 依据 MCP URL 自动发现授权服务器）；若 `mcp_oauth_clients` 表中该 `(tenant, service)` 尚无客户端，调用 `h.RegisterClient(ctx, "OPC")` 做一次性 RFC 7591 注册并 `SaveClient` 持久化，之后所有用户复用同一 client_id。
 - **PKCE**：`transport.GenerateCodeVerifier()` / `GenerateCodeChallenge()` / `GenerateState()`；`code_verifier` 是秘密，**只存服务端 state**（`internal/mcp/oauth_state.go` 注释明确禁止编码进 state 参数）。
 - **State 存储**（`oauth_state.go`）：有 Redis 时写 `weknora:mcp_oauth_state:<state>`（支持 `WEKNORA_REDIS_NAMESPACE` 命名空间，回调可落在任意后端副本）；Lite 模式退化为带 GC 的内存 map。TTL 固定 10 分钟；`Take` 为**取即删**的单次消费。另存一份不含秘密的 `OAuthAttempt` 记录，`CompleteAttempt` 仅在 token 成功落库后置 `Completed=true`——因此新弹窗的授权状态查询（`status?authorization_attempt=`）**绝不会被历史 token 误判为已完成**。
 - **回调**（`oauth_manager.go` 的 `CompleteAuthorization` + `internal/handler/mcp_oauth.go` 的 `Callback`）：回调路由公开无鉴权，靠单次 state 认证；由于浏览器收到重定向后 Gin 请求 ctx 即取消，token 交换用 `context.WithoutCancel + 60s` 超时（`oauthCallbackTimeout`）脱离请求生命周期。交换成功后 `CloseClient(serviceID)` 回收可能携带旧注册信息的连接，最后把结果编码在 URL fragment（`#mcp_oauth_result=success` / `#mcp_oauth_error=...`）重定向回前端。
@@ -285,7 +285,7 @@ sequenceDiagram
 `internal/mcp/oauth_tokenstore.go` 提供两层 TokenStore：
 
 - `dbTokenStore`：实现 mcp-go 的 `transport.TokenStore`，授权/刷新成功后由 mcp-go 回调 `SaveToken` 落库（缺省 `TokenType` 补 `Bearer`，`ExpiresIn` 换算成 `ExpiresAt`）。
-- `managedTokenStore`：运行时传输实际使用的包装——**`GetToken` 抹掉 `ExpiresAt`**，让 mcp-go 永远认为 token 未过期，从而禁用依赖库自身的自动刷新；刷新决策完全收归 WeKnora 的协调生命周期（否则会绕过跨实例租约，并把刷新失败折叠成笼统的 authorization-required）。
+- `managedTokenStore`：运行时传输实际使用的包装——**`GetToken` 抹掉 `ExpiresAt`**，让 mcp-go 永远认为 token 未过期，从而禁用依赖库自身的自动刷新；刷新决策完全收归 OPC 的协调生命周期（否则会绕过跨实例租约，并把刷新失败折叠成笼统的 authorization-required）。
 
 ##### Token 刷新与跨实例租约（oauth_lifecycle.go）
 
@@ -408,7 +408,7 @@ flowchart LR
 
 调用白名单以外的工具返回 JSON-RPC `-32602`，工具不会执行；这与旧 SDK 返回工具结果 `isError=true` 的错误形状不同。知识库越权仍由原有作用域检查拒绝。
 
-WeKnora 调用外部 MCP 服务时，由 `mcp-go v1.1.1` 按每个对端独立自动协商：先尝试新版发现，失败后尝试 legacy 初始化。忽略发现请求的旧服务最多增加约 5 秒探测等待；401/503 等探测失败也会尝试 legacy 初始化，两次失败则返回初始化错误。父请求取消或超时不会被标记为初始化成功。该协商不取决于调用 WeKnora 的客户端所用版本。
+OPC 调用外部 MCP 服务时，由 `mcp-go v1.1.1` 按每个对端独立自动协商：先尝试新版发现，失败后尝试 legacy 初始化。忽略发现请求的旧服务最多增加约 5 秒探测等待；401/503 等探测失败也会尝试 legacy 初始化，两次失败则返回初始化错误。父请求取消或超时不会被标记为初始化成功。该协商不取决于调用 OPC 的客户端所用版本。
 
 外部工具目录保留完整 JSON Schema；新版工具调用会按 schema 的 `x-mcp-header` 标注生成 `Mcp-Param-*` 请求头。目录刷新失败时不会用部分结果替换上一次完整目录的参数头定义，断开连接时清除这些定义。
 
@@ -485,7 +485,7 @@ claude mcp add --transport http weknora-docs https://your-weknora.example.com/mc
 :::
 
 
-`mcp-server/` 是一个独立的 Python 包，PyPI 名 **`tencent-weknora-mcp`**（当前 1.1.1，Python ≥ 3.10，依赖 `mcp>=2,<3`、`requests>=2.31.0`、`starlette`、`uvicorn`），核心实现在 `mcp-server/weknora_mcp_server.py`：`WeKnoraClient` 用 `requests.Session` 携带 `X-API-Key` 调 WeKnora REST API，`MCPServer("weknora-server", version="1.1.1")` 注册工具并通过所选传输对外服务。
+`mcp-server/` 是一个独立的 Python 包，PyPI 名 **`tencent-weknora-mcp`**（当前 1.1.1，Python ≥ 3.10，依赖 `mcp>=2,<3`、`requests>=2.31.0`、`starlette`、`uvicorn`），核心实现在 `mcp-server/weknora_mcp_server.py`：`WeKnoraClient` 用 `requests.Session` 携带 `X-API-Key` 调 OPC REST API，`MCPServer("weknora-server", version="1.1.1")` 注册工具并通过所选传输对外服务。
 
 ::: warning 包名与 API 变更（v1.1.x）
 - 官方包名是 `tencent-weknora-mcp`（由 Tencent/WeKnora 通过 Trusted Publishing 发布）；社区早期的 `weknora-mcp` 已不再使用。命令行入口仍是 `weknora-mcp-server` / `weknora-server`。
@@ -547,7 +547,7 @@ stdio 传输把 stdout 当作协议通道，任何多余的 `print` 都会污染
 
 | 环境变量 | 默认值 | 说明 |
 |---|---|---|
-| `WEKNORA_BASE_URL` | `http://localhost:8080/api/v1` | WeKnora API 基础 URL |
+| `WEKNORA_BASE_URL` | `http://localhost:8080/api/v1` | OPC API 基础 URL |
 | `WEKNORA_API_KEY` | 空 | 租户 API Key，以 `X-API-Key` header 发送 |
 | `WEKNORA_CHAT_TIMEOUT` | `300` | chat / agent_chat 的 SSE 读超时（秒），非法值回退 300 |
 | `WEKNORA_VERIFY_SSL` | `true` | 设为 `false` 关闭 SSL 证书校验（仅限自签名证书的开发环境） |
@@ -686,7 +686,7 @@ stdio 传输（Claude Desktop 的 `claude_desktop_config.json`）：
 
 远程部署（Docker / `--transport http`）时，客户端连接 `http://<host>:8000/mcp` 并携带 `Authorization: Bearer <MCP_SERVER_AUTH_TOKEN>`。
 
-顺带一提：WeKnora 主程序（第一部分）也可以作为 MCP 客户端接入这个 mcp-server——在「工具箱 → MCP服务」中新建 Streamable HTTP 服务指向 `/mcp` 端点，认证方式选「API Key / Token」，请求头名称填 `Authorization`，密钥值填 `Bearer <MCP_SERVER_AUTH_TOKEN>` 即可，从而让 WeKnora Agent 操作另一套 WeKnora 实例。
+顺带一提：OPC 主程序（第一部分）也可以作为 MCP 客户端接入这个 mcp-server——在「工具箱 → MCP服务」中新建 Streamable HTTP 服务指向 `/mcp` 端点，认证方式选「API Key / Token」，请求头名称填 `Authorization`，密钥值填 `Bearer <MCP_SERVER_AUTH_TOKEN>` 即可，从而让 OPC Agent 操作另一套 OPC 实例。
 
 #### 文件上传路径安全（upload_paths.py） {#_2-6-文件上传路径安全-upload-paths-py}
 

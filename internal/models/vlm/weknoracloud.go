@@ -31,10 +31,10 @@ type WeKnoraCloudVLM struct {
 // NewWeKnoraCloudVLM creates a WeKnoraCloud-backed VLM instance.
 func NewWeKnoraCloudVLM(config *Config) (*WeKnoraCloudVLM, error) {
 	if config.AppID == "" {
-		return nil, fmt.Errorf("WeKnoraCloud VLM: AppID is required")
+		return nil, fmt.Errorf("OPC Cloud VLM: AppID is required")
 	}
 	if config.AppSecret == "" {
-		return nil, fmt.Errorf("WeKnoraCloud VLM: AppSecret is required")
+		return nil, fmt.Errorf("OPC Cloud VLM: AppSecret is required")
 	}
 	baseURL := strings.TrimRight(config.BaseURL, "/")
 	if err := validateVLMBaseURL(baseURL); err != nil {
@@ -128,7 +128,7 @@ func (v *WeKnoraCloudVLM) Predict(ctx context.Context, imgBytesList [][]byte, pr
 
 	bodyBytes, err := json.Marshal(reqBody)
 	if err != nil {
-		return "", fmt.Errorf("weknoracloud VLM: marshal: %w", err)
+		return "", fmt.Errorf("OPC Cloud VLM: marshal: %w", err)
 	}
 
 	requestID := uuid.New().String()
@@ -136,7 +136,7 @@ func (v *WeKnoraCloudVLM) Predict(ctx context.Context, imgBytesList [][]byte, pr
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, v.baseURL+weKnoraCloudVLMPath, bytes.NewReader(bodyBytes))
 	if err != nil {
-		return "", fmt.Errorf("weknoracloud VLM: create request: %w", err)
+		return "", fmt.Errorf("OPC Cloud VLM: create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	for k, hv := range headers {
@@ -152,24 +152,24 @@ func (v *WeKnoraCloudVLM) Predict(ctx context.Context, imgBytesList [][]byte, pr
 
 	resp, err := v.client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("weknoracloud VLM: do request: %w", err)
+		return "", fmt.Errorf("OPC Cloud VLM: do request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("weknoracloud VLM: read response: %w", err)
+		return "", fmt.Errorf("OPC Cloud VLM: read response: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("weknoracloud VLM: status %d: %s", resp.StatusCode, string(respBytes))
+		return "", fmt.Errorf("OPC Cloud VLM: status %d: %s", resp.StatusCode, string(respBytes))
 	}
 
 	var vlmResp weKnoraCloudVLMResponse
 	if err := json.Unmarshal(respBytes, &vlmResp); err != nil {
-		return "", fmt.Errorf("weknoracloud VLM: unmarshal: %w", err)
+		return "", fmt.Errorf("OPC Cloud VLM: unmarshal: %w", err)
 	}
 	if len(vlmResp.Choices) == 0 {
-		return "", fmt.Errorf("weknoracloud VLM: no choices in response")
+		return "", fmt.Errorf("OPC Cloud VLM: no choices in response")
 	}
 
 	content := vlmResp.Choices[0].Message.Content

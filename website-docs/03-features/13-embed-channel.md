@@ -1,13 +1,13 @@
 # 网页嵌入（Embed Channel）
 
-嵌入渠道用于在官网或帮助中心提供知识库问答挂件。创建渠道并绑定智能体后，将生成的脚本加入网页，访客无需 WeKnora 账号即可对话。访客的检索范围和模型完全由渠道绑定的智能体决定：服务端会丢弃请求里的知识库、文档、标签、@提及、技能和模型覆盖。
+嵌入渠道用于在官网或帮助中心提供知识库问答挂件。创建渠道并绑定智能体后，将生成的脚本加入网页，访客无需 OPC 账号即可对话。访客的检索范围和模型完全由渠道绑定的智能体决定：服务端会丢弃请求里的知识库、文档、标签、@提及、技能和模型覆盖。
 
 在「设置 → 网页嵌入」新建渠道，绑定智能体并设置允许嵌入的域名，然后复制接入代码。公开使用前应配置域名白名单和限流，限制访问来源与请求量。
 
 <Screenshot
   src="/screenshots/embed-channel.png"
-  caption="网页嵌入渠道：配置、代码片段与挂件效果"
-  hint="展示渠道配置（绑定 Agent、允许域名、外观设置）与生成的 script 片段；如有可能再附一张挂件在网页上展开的效果图。" />
+  caption="网页嵌入渠道：外观设置与浮窗预览"
+  hint="展示「新建嵌入渠道 → 外观展示」中的页面标题、浮窗位置、默认语言、主题色与浮窗预览。" />
 
 渠道支持静态 token 和安全模式接入，也可通过 Webhook 接收对话事件。
 
@@ -15,7 +15,7 @@
 
 ## 前端挂件接入
 
-挂件 SDK 是一个无依赖的 loader 脚本 `frontend/public/weknora-widget.js`（部署后从 WeKnora 服务根路径提供），负责渲染悬浮按钮 + iframe 面板，iframe 指向嵌入页 SPA `/embed/{channel_id}`（入口 `frontend/src/embed-main.ts`）。
+挂件 SDK 是一个无依赖的 loader 脚本 `frontend/public/weknora-widget.js`（部署后从 OPC 服务根路径提供），负责渲染悬浮按钮 + iframe 面板，iframe 指向嵌入页 SPA `/embed/{channel_id}`（入口 `frontend/src/embed-main.ts`）。
 
 ### 方式一：静态 Token 模式（token 对访客可见） {#方式一-静态-token-模式-最简单-token-暴露在页面}
 
@@ -47,7 +47,7 @@ publish token 只保存在业务后端，页面通过 `data-token-endpoint` 指�
 
 业务后端实现该 endpoint：服务端持有 `em_` token，调用 `POST /api/v1/embed/{channel_id}/exchange` 换取 `ems_` 短效 token 并返回 `{ "token": "ems_...", "expiresIn": 1800 }`。挂件会在约 80% TTL 时（不早于 30 秒）自动刷新 token（见 `weknora-widget.js` 中的 `scheduleRefresh`）。**publish token 永不到达浏览器。**
 
-换取接口必须先验证业务侧 Session/JWT 的有效性和访客访问权；仅判断 Cookie 或 Authorization 头是否存在不构成身份验证。服务端调用 exchange 时须手动发送与渠道白名单一致的业务宿主 `Origin`，例如 `Origin: https://shop.example.com`；不要把 WeKnora 的管理 Token 暴露给访客。
+换取接口必须先验证业务侧 Session/JWT 的有效性和访客访问权；仅判断 Cookie 或 Authorization 头是否存在不构成身份验证。服务端调用 exchange 时须手动发送与渠道白名单一致的业务宿主 `Origin`，例如 `Origin: https://shop.example.com`；不要把 OPC 的管理 Token 暴露给访客。
 
 其余可选属性：`data-base-url`（默认从 script src 推导）、`data-width` / `data-height`（面板尺寸，默认 400×600）、`data-sandbox`（iframe sandbox 策略；跨域嵌入时自动加 `allow-scripts allow-forms allow-popups allow-modals allow-same-origin`）。
 
@@ -56,7 +56,7 @@ publish token 只保存在业务后端，页面通过 `data-token-endpoint` 指�
 ```html
 <script src="https://your-weknora.example.com/weknora-widget.js"></script>
 <script>
-  WeKnora.init({
+  OPC.init({
     channel: '渠道UUID',
     tokenEndpoint: 'https://your-backend.example.com/weknora/embed-token', // 或 token: 'em_...'
     position: 'bottom-right',
@@ -64,11 +64,11 @@ publish token 只保存在业务后端，页面通过 `data-token-endpoint` 指�
     title: 'AI Assistant',
     baseUrl: 'https://your-weknora.example.com',
   });
-  WeKnora.setContext({ userId: 'u_123', page: location.pathname }); // 上下文随每次提问注入
-  WeKnora.setLocale('en-US');
-  WeKnora.openWithQuery('如何重置密码？');   // 打开面板并自动发送提问
-  WeKnora.on('ready', () => console.log('widget ready'));
-  // 其他：WeKnora.open() / close() / toggle() / destroy() / off(event, fn)
+  OPC.setContext({ userId: 'u_123', page: location.pathname }); // 上下文随每次提问注入
+  OPC.setLocale('en-US');
+  OPC.openWithQuery('如何重置密码？');   // 打开面板并自动发送提问
+  OPC.on('ready', () => console.log('widget ready'));
+  // 其他：OPC.open() / close() / toggle() / destroy() / off(event, fn)
 </script>
 ```
 
@@ -109,7 +109,7 @@ publish token 只保存在业务后端，页面通过 `data-token-endpoint` 指�
 
 ### 宿主来源与部署
 
-A 网站嵌入 B 的 WeKnora 时，白名单填 A。标准 Nginx 使用 `/api/v1/embed-frame-policy` 获取渠道策略（无需 token，仅返回 CSP，不返回渠道配置），并在 `/embed/:channelId` 的 HTML 响应中设置 `frame-ancestors`；Lite 使用同一策略。该页面不缓存，策略获取失败时不返回嵌入 HTML。
+A 网站嵌入 B 的 OPC 时，白名单填 A。标准 Nginx 使用 `/api/v1/embed-frame-policy` 获取渠道策略（无需 token，仅返回 CSP，不返回渠道配置），并在 `/embed/:channelId` 的 HTML 响应中设置 `frame-ancestors`；Lite 使用同一策略。该页面不缓存，策略获取失败时不返回嵌入 HTML。
 
 升级时，过去仅填 B 的渠道需改填实际宿主 A，并同时更新前后端。自定义反向代理需保留 CSP、原始 Host（含端口）、协议及 `Sec-Fetch-Site`。白名单限制浏览器嵌入，不能代替访客认证或阻止持有 token 的非浏览器客户端；此类访问控制使用安全模式和限流。
 
@@ -203,7 +203,7 @@ type EmbedChannel struct {
 | `name` | string | — | 渠道显示名称 |
 | `enabled` | bool | `true` | 渠道开关，关闭后所有公开接口拒绝访问 |
 | `agent_id` | string | `builtin-quick-answer` | 绑定的 Agent，决定知识库范围与对话能力 |
-| `allowed_origins` | string[] | — | **必填至少一项，填写嵌入宿主 A，不是 WeKnora 地址 B**。支持三种形式：完整 `http(s)://` Origin（不含路径、查询参数）、子域名通配 `*.example.com`（只匹配子域，不含 `example.com` 本身；未写端口时匹配任意端口）、全通配 `*`（`GIN_MODE=release` 时拒绝保存，仅供开发） |
+| `allowed_origins` | string[] | — | **必填至少一项，填写嵌入宿主 A，不是 OPC 地址 B**。支持三种形式：完整 `http(s)://` Origin（不含路径、查询参数）、子域名通配 `*.example.com`（只匹配子域，不含 `example.com` 本身；未写端口时匹配任意端口）、全通配 `*`（`GIN_MODE=release` 时拒绝保存，仅供开发） |
 | `welcome_message` | string | 空 | 打开挂件时的欢迎语 |
 | `rate_limit_per_minute` | int | `30` | 单 IP 每分钟请求上限 |
 | `rate_limit_per_day` | int | `10000` | 渠道级每日请求总量上限 |
@@ -274,7 +274,7 @@ sequenceDiagram
     participant Host as "宿主页面 (weknora-widget.js)"
     participant Backend as "业务后端 (安全模式可选)"
     participant Iframe as "嵌入页 SPA (/embed/:channel_id)"
-    participant API as "WeKnora API (/api/v1/embed/:channel_id)"
+    participant API as "OPC API (/api/v1/embed/:channel_id)"
     participant Webhook as "站长 Webhook"
 
     Visitor->>Host: 加载页面, script 标签自动初始化

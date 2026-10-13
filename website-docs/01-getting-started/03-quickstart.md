@@ -45,8 +45,8 @@
 
 <Screenshot
   src="/screenshots/quickstart-init-wizard.png"
-  caption="初始化向导：为知识库选择对话模型与向量模型"
-  hint="展示模型来源（Ollama / 远程 API）、模型名、Base URL 输入框，以及连通性测试通过的提示。" />
+  caption="知识库模型配置：对话模型与可选的 Wiki 嵌入模型"
+  hint="当前 OPC 本地界面截图；演示资料为虚构数据，不代表模型、沙箱或外部服务的执行结果。" />
 
 ::: tip 从容器连接 Ollama
 后端容器内的 `localhost` 指向容器自身。连接宿主机上的 Ollama 时，使用 `http://host.docker.internal:11434`。
@@ -60,8 +60,8 @@
 
 <Screenshot
   src="/screenshots/quickstart-upload.png"
-  caption="上传确认对话框：选择文件、打标签、调整解析选项"
-  hint="展示待上传文件列表、标签选择与解析引擎选项。" />
+  caption="添加文档入口：上传文件、文件夹、网页与在线编辑"
+  hint="当前 OPC 本地界面截图；演示资料为虚构数据，不代表模型、沙箱或外部服务的执行结果。" />
 
 上传后文档会异步解析，状态依次是 `pending → processing → finalizing → completed`。PDF 扫描件、大文件会慢一些，列表页会实时刷新进度。
 

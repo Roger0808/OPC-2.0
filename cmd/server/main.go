@@ -1,12 +1,12 @@
 // Package main is the main package for the WeKnora server
 // It contains the main function and the entry point for the server
 //
-// @title           WeKnora API
+// @title           OPC API
 // @version         1.0
-// @description     WeKnora 知识库管理系统 API 文档
+// @description     OPC 知识库管理系统 API 文档
 // @termsOfService  http://swagger.io/terms/
 //
-// @contact.name   WeKnora Github
+// @contact.name   OPC GitHub
 // @contact.url    https://github.com/Tencent/WeKnora
 //
 // @BasePath  /api/v1

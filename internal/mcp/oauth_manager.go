@@ -18,7 +18,7 @@ import (
 
 // clientRegistrationName is sent as client_name during dynamic client
 // registration (RFC 7591).
-const clientRegistrationName = "WeKnora"
+const clientRegistrationName = "OPC"
 
 // oauthCallbackTimeout bounds token exchange after the browser lands on the
 // public callback route. The Gin request context is canceled once the client

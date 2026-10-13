@@ -17,8 +17,8 @@
 
 <Screenshot
   src="/screenshots/observability-langfuse.png"
-  caption="Langfuse 追踪：一次问答的完整调用链"
-  hint="展示 Langfuse 中一条 trace 的展开视图，含检索、重排、生成各 span 与 token 用量。" />
+  caption="处理 Trace：阶段耗时与元数据（虚构演示记录）"
+  hint="当前 OPC 本地界面截图；演示资料为虚构数据，不代表模型、沙箱或外部服务的执行结果。" />
 
 排查请求问题时可先获取响应头中的 `X-Request-ID`，再关联日志与追踪记录。
 

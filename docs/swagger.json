@@ -1,11 +1,11 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "WeKnora 知识库管理系统 API 文档",
-        "title": "WeKnora API",
+        "description": "OPC 知识库管理系统 API 文档",
+        "title": "OPC API",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
-            "name": "WeKnora Github",
+            "name": "OPC GitHub",
             "url": "https://github.com/Tencent/WeKnora"
         },
         "version": "1.0"

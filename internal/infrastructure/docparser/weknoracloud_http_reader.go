@@ -40,10 +40,10 @@ type WeKnoraCloudSignedDocumentReader struct {
 
 func NewWeKnoraCloudSignedDocumentReader(appID, apiKey string) (*WeKnoraCloudSignedDocumentReader, error) {
 	if appID == "" {
-		return nil, fmt.Errorf("WeKnoraCloud appID is required")
+		return nil, fmt.Errorf("OPC Cloud appID is required")
 	}
 	if apiKey == "" {
-		return nil, fmt.Errorf("WeKnoraCloud apiKey is required")
+		return nil, fmt.Errorf("OPC Cloud apiKey is required")
 	}
 	clientCfg := secutils.DefaultSSRFSafeHTTPClientConfig()
 	clientCfg.Timeout = 500 * time.Minute
@@ -66,7 +66,7 @@ func (p *WeKnoraCloudSignedDocumentReader) IsConnected() bool { return true }
 func (p *WeKnoraCloudSignedDocumentReader) ListEngines(ctx context.Context, overrides map[string]string) ([]types.ParserEngineInfo, error) {
 	return []types.ParserEngineInfo{{
 		Name:        WeKnoraCloudEngineName,
-		Description: "WeKnoraCloud signed docreader",
+		Description: "OPC Cloud signed docreader",
 		FileTypes:   []string{"docx", "doc", "pdf", "md", "markdown", "xlsx", "xls", "pptx", "ppt"},
 		Available:   true,
 	}}, nil
@@ -117,7 +117,7 @@ func (p *WeKnoraCloudSignedDocumentReader) Read(ctx context.Context, req *types.
 	}
 	if strings.TrimSpace(submit.TaskID) == "" {
 		logger.Errorf(context.Background(), "[WeKnoraCloud] submit response missing task_id (status=%q message=%q)", submit.Status, submit.Message)
-		return nil, fmt.Errorf("weknoracloud docreader submit response missing task_id")
+		return nil, fmt.Errorf("OPC Cloud docreader submit response missing task_id")
 	}
 	logger.Infof(ctx, "[WeKnoraCloud] task submitted task_id=%s file=%q type=%q", submit.TaskID, req.FileName, req.FileType)
 	return p.pollTaskResult(ctx, submit.TaskID)
@@ -194,17 +194,17 @@ func (p *WeKnoraCloudSignedDocumentReader) pollTaskResult(ctx context.Context, t
 		case "failed":
 			if taskResp.Error != "" {
 				logger.Errorf(context.Background(), "[WeKnoraCloud] task_id=%s failed: %s", taskID, taskResp.Error)
-				return nil, fmt.Errorf("weknoracloud docreader task failed: %s", taskResp.Error)
+				return nil, fmt.Errorf("OPC Cloud docreader task failed: %s", taskResp.Error)
 			}
 			logger.Errorf(context.Background(), "[WeKnoraCloud] task_id=%s failed: %s", taskID, taskResp.Message)
-			return nil, fmt.Errorf("weknoracloud docreader task failed: %s", taskResp.Message)
+			return nil, fmt.Errorf("OPC Cloud docreader task failed: %s", taskResp.Message)
 		case "cancelled":
 			if taskResp.Error != "" {
 				logger.Errorf(context.Background(), "[WeKnoraCloud] task_id=%s cancelled: %s", taskID, taskResp.Error)
-				return nil, fmt.Errorf("weknoracloud docreader task cancelled: %s", taskResp.Error)
+				return nil, fmt.Errorf("OPC Cloud docreader task cancelled: %s", taskResp.Error)
 			}
 			logger.Errorf(context.Background(), "[WeKnoraCloud] task_id=%s cancelled", taskID)
-			return nil, fmt.Errorf("weknoracloud docreader task cancelled")
+			return nil, fmt.Errorf("OPC Cloud docreader task cancelled")
 		}
 		if err := pollCtx.Err(); err != nil {
 			logger.Errorf(ctx, "[WeKnoraCloud] poll task_id=%s aborted before sleep: %v", taskID, err)

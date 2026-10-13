@@ -1,13 +1,13 @@
 # IM 集成（IM Integration）
 
-IM 集成将智能体接入企业微信、飞书、钉钉、Slack、Telegram 等聊天平台。用户可在平台中向机器人提问，由 WeKnora 根据绑定的智能体配置执行检索和回答。
+IM 集成将智能体接入企业微信、飞书、钉钉、Slack、Telegram 等聊天平台。用户可在平台中向机器人提问，由 OPC 根据绑定的智能体配置执行检索和回答。
 
 在「设置 → IM 集成」新建渠道，选择平台、填写应用凭据并绑定智能体后启用。Webhook 模式需要在平台后台填写回调地址；长连接模式无需为接收消息配置公网回调地址。每个渠道可单独设置「回复语言」，固定智能体在该渠道的回复语言；留空时使用部署默认语言。
 
 <Screenshot
   src="/screenshots/im-channels.png"
-  caption="IM 渠道配置：平台、凭据与绑定的 Agent"
-  hint="展示渠道列表与某个渠道的配置表单（平台类型、凭据、绑定 Agent、回调地址）。" />
+  caption="添加 IM 渠道：选择平台与绑定智能体"
+  hint="展示「添加渠道」的基本信息表单：智能体、平台与渠道名称。" />
 
 支持的平台还可将收到的文件导入知识库，并提供 `/help` 等内置命令。具体行为取决于平台能力和渠道配置。
 
@@ -40,7 +40,7 @@ IM 集成将智能体接入企业微信、飞书、钉钉、Slack、Telegram 等
 | `/info` | `cmd_info.go` | 展示当前绑定 Agent 的信息与能力：Agent/RAG 模式、启用的知识库清单（`KBSelectionMode` all/selected/none）、Skills、MCP 服务、联网搜索开关、输出模式 | 无 |
 | `/search <关键词>` | `cmd_search.go` | 直接对 Agent 可达的知识库做混合检索（向量+关键词），返回原文片段（**不经 AI 总结**）；最多显示 5 条、每条 200 rune，附匹配度百分比。知识库范围与 QA 流水线的 `resolveKnowledgeBasesFromAgent` 一致（含 Agent 模式能力过滤） | 无 |
 | `/stop` | `cmd_stop.go` | 中止当前正在进行的回答（可打断长 ReAct 推理链） | `ActionStop`：先移出队列或取消本机 in-flight；再向 StreamManager 写 stop 事件（与 Web 端 StopSession 同机制，支持**跨实例**停止——通过 `im:inflight:` 映射查到 sessionID/messageID）；最后写 Redis `im:stop:` 标记兜底"已排队未执行"的请求 |
-| `/clear` | `cmd_clear.go` | 清空对话记忆 | `ActionClear`：软删当前 `ChannelSession`，下一条消息创建全新 WeKnora 会话 |
+| `/clear` | `cmd_clear.go` | 清空对话记忆 | `ActionClear`：软删当前 `ChannelSession`，下一条消息创建全新 OPC 会话 |
 
 ## 群聊与私聊行为
 
@@ -78,7 +78,7 @@ IM 集成将智能体接入企业微信、飞书、钉钉、Slack、Telegram 等
 IM 场景下没有可交互的前端来完成 MCP 服务的会话内 OAuth 授权，因此：
 
 - `withIMIdentity` 给上下文打上 `MCPOAuthNonInteractive` 标记——Agent 遇到未授权的 OAuth MCP 服务时**不阻塞等待**，而是发出一次性 `EventMCPOAuthRequired` 事件；
-- `handleMessageStream` 收集这些事件（按 ServiceID 去重），回答结束后由 `buildIMMCPAuthNotice` 生成授权提示追加在回复末尾：若配置了 `APP_EXTERNAL_URL` 且 OAuthManager 可用，则为每个服务生成专属授权链接（回调地址 `<APP_EXTERNAL_URL>/api/v1/mcp-oauth/callback`，主体为 `PrincipalIMUser`，即授权与"租户+渠道+平台+IM 用户"绑定）；否则提示到 WeKnora 管理后台完成授权；
+- `handleMessageStream` 收集这些事件（按 ServiceID 去重），回答结束后由 `buildIMMCPAuthNotice` 生成授权提示追加在回复末尾：若配置了 `APP_EXTERNAL_URL` 且 OAuthManager 可用，则为每个服务生成专属授权链接（回调地址 `<APP_EXTERNAL_URL>/api/v1/mcp-oauth/callback`，主体为 `PrincipalIMUser`，即授权与"租户+渠道+平台+IM 用户"绑定）；否则提示到 OPC 管理后台完成授权；
 - 用户点链接完成授权后**重新发送原消息**即可使用该 MCP 服务。
 
 ```mermaid
@@ -109,7 +109,7 @@ flowchart LR
 | `BotIdentity` | 由平台+模式+凭据推导的机器人唯一标识（`computeBotIdentity`，如 `feishu:<app_id>`、`telegram:<botID>`、`wecom:ws:<bot_id>`），数据库唯一索引防止同一个机器人被配置到两个渠道（`checkDuplicateBot` 返回 `duplicate_bot:` 前缀错误 → HTTP 409） |
 | `Credentials` | JSONB 凭据。列表接口（`IMChannelSummary`）**从不返回凭据内容**，只返回 `credentials_configured` 布尔值 |
 
-`ChannelSession`（表 `im_channel_sessions`）把 `(platform, user_id, chat_id, thread_id, tenant_id)` 映射到 WeKnora `session_id`，实现 IM 侧的对话连续性。若底层 Session 被从 Web UI 删除，`HandleMessage` 会检测 `ErrSessionNotFound`，软删陈旧映射并自动重建（修复 #1046、#1499 中"机器人永久失联"的问题）。
+`ChannelSession`（表 `im_channel_sessions`）把 `(platform, user_id, chat_id, thread_id, tenant_id)` 映射到 OPC `session_id`，实现 IM 侧的对话连续性。若底层 Session 被从 Web UI 删除，`HandleMessage` 会检测 `ErrSessionNotFound`，软删陈旧映射并自动重建（修复 #1046、#1499 中"机器人永久失联"的问题）。
 
 #### 渠道管理 API（internal/handler/im.go + routes_agent.go）
 
@@ -122,13 +122,13 @@ flowchart LR
 | `DELETE /api/v1/im-channels/:id` | 删除 |
 | `POST /api/v1/im-channels/:id/toggle` | 启用/停用 |
 | `POST /api/v1/wechat/qrcode`、`POST /api/v1/wechat/qrcode/status` | 微信（iLink）扫码绑定：生成二维码并轮询状态 |
-| `GET / POST /api/v1/im/callback/:channel_id` | **平台回调地址**（webhook 模式下配置到各平台后台；走平台自身签名校验，不需要 WeKnora API Key） |
+| `GET / POST /api/v1/im/callback/:channel_id` | **平台回调地址**（webhook 模式下配置到各平台后台；走平台自身签名校验，不需要 OPC API Key） |
 
-Webhook 模式的接入方式就是把 `https://<你的域名>/api/v1/im/callback/<channel_id>` 填到平台的事件订阅/回调地址处；WeKnora 会先响应平台的 URL 验证挑战（`HandleURLVerification`，如飞书的 challenge 回显、企微的 echostr 解密），之后每个回调都过 `VerifyCallback` 签名校验。WebSocket/长连接模式则无需公网回调地址，由 WeKnora 主动连接平台网关。
+Webhook 模式的接入方式就是把 `https://<你的域名>/api/v1/im/callback/<channel_id>` 填到平台的事件订阅/回调地址处；OPC 会先响应平台的 URL 验证挑战（`HandleURLVerification`，如飞书的 challenge 回显、企微的 echostr 解密），之后每个回调都过 `VerifyCallback` 签名校验。WebSocket/长连接模式则无需公网回调地址，由 OPC 主动连接平台网关。
 
 #### 飞书/Lark 反向代理
 
-credentials.api_base_url 可覆盖 API origin，并同时用作长连接 SDK 的 bootstrap domain。留空分别使用飞书/Lark 默认云地址；私有网络可填 `https://feishu-proxy.example.com`，不在结尾附加具体 API 路径。代理应转发平台 API 与长连接启动请求，启动响应返回的 WebSocket 地址也必须能从 WeKnora 服务器访问。只代理网页控制台不能解决服务器到飞书的网络问题。
+credentials.api_base_url 可覆盖 API origin，并同时用作长连接 SDK 的 bootstrap domain。留空分别使用飞书/Lark 默认云地址；私有网络可填 `https://feishu-proxy.example.com`，不在结尾附加具体 API 路径。代理应转发平台 API 与长连接启动请求，启动响应返回的 WebSocket 地址也必须能从 OPC 服务器访问。只代理网页控制台不能解决服务器到飞书的网络问题。
 
 ```json
 {"platform":"feishu","mode":"websocket","credentials":{"app_id":"<app-id>","app_secret":"<app-secret>","api_base_url":"https://feishu-proxy.example.com"}}
@@ -184,7 +184,7 @@ sequenceDiagram
         S->>S: CommandRegistry.Parse → cmd.Execute → 副作用 (ActionClear / ActionStop)
         S->>A: SendReply / 流式回复命令结果
     else "普通消息（含文件/图片）"
-        S->>DB: resolveSession — (platform,user,chat[,thread]) → ChannelSession → WeKnora Session
+        S->>DB: resolveSession — (platform,user,chat[,thread]) → ChannelSession → OPC Session
         S->>Q: Enqueue(qaRequest)（队列满/超限则回复"排队人数较多"）
         Q-->>S: worker 执行 executeQARequest
         S->>DB: 创建 user message + assistant 占位 message
@@ -206,7 +206,7 @@ sequenceDiagram
 - **限流**：按 `channelID:userID:chatID[:threadID]` 做滑动窗口限流（默认 60s 内 10 条，可经 `config.IM` 覆盖）；**斜杠命令绕过限流**，保证用户在风暴中仍能 `/stop`。
 - **QA 队列**（`qaqueue.go`）：有界队列 + 固定 worker 池（默认 workers=5、队列上限 50、单用户排队上限 3、排队超时 60s），多实例下通过 Redis 计数实现**全局单用户上限**（`im:queue:user:`）与可选的**全局并发闸门**（`im:global:active` + Lua 脚本，`GlobalMaxWorkers` 配置），对下游 LLM 形成背压。排队位置 > 0 时先回一条"排队中"提示。
 - **会话解析**：`user` 模式按用户维度共享会话，标题形如"张三 · 群聊 1a2b3c4d"；`thread` 模式每个顶层消息/话题一个会话（Slack thread、飞书话题群、Telegram Forum Topic、Mattermost root_id）。首条消息会异步生成会话标题（`GenerateTitleAsync`）。
-- **身份注入**（`withIMIdentity`）：IM 回调走平台签名而非 WeKnora 登录态，因此注入合成身份 `system-<tenantID>` + `PrincipalIMUser`（`tenantID:channelID:platform:userID`）+ Viewer 角色，使组织共享知识库等依赖 UserID 的逻辑正常工作；同时标记 `MCPOAuthNonInteractive`（见[MCP OAuth 授权通知](#mcp-oauth-授权通知-身份绑定)）。
+- **身份注入**（`withIMIdentity`）：IM 回调走平台签名而非 OPC 登录态，因此注入合成身份 `system-<tenantID>` + `PrincipalIMUser`（`tenantID:channelID:platform:userID`）+ Viewer 角色，使组织共享知识库等依赖 UserID 的逻辑正常工作；同时标记 `MCPOAuthNonInteractive`（见[MCP OAuth 授权通知](#mcp-oauth-授权通知-身份绑定)）。
 - **流式渲染**（`handleMessageStream` + `think.go` + `tool_display.go`）：订阅 EventBus 的 `EventAgentThought`（思考）、`EventAgentToolCall`/`EventAgentToolResult`（工具状态行，内部工具经 `isToolVisibleToUser` 过滤；快速问答只显示 `query_understand`/`knowledge_search` 两个 RAG 流水线工具）、`EventAgentFinalAnswer`（答案分片）、`EventAgentReferences`（引用）、`EventAgentComplete`。Agent 模式下"乐观答案"在后续又发起工具调用时会被**撤回**进思考块（`retractAgentLiveAnswer`，与 Web 端 superseded preamble 一致）。每 300ms 把缓冲内容整段推送（`UpdateStreamContent` 为替换语义）；`holdbackCutoff` 会扣住跨分片边界的不完整 `provider://` URL、Markdown 图片、XML 标签，避免闪烁半截内容。最终 `FinalizeStream` 只保留答案文本（`StripThinkBlocks`），并把 `<kb/>`、`<web/>` 引用标签与 `<image>` XML 清洗掉、`provider://` 存储 URL 重写为可访问链接（`cleanIMContent` / `rewriteStorageURLs`）。
 - **流式收尾**：Agent 模式下，收到 `EventAgentComplete` 或 AgentQA 调用返回（以先到者为准）都会结束流式回复，避免卡片停在「生成中」；完成事件之后产生的错误仍会收集并附在最终回复中。快速问答（KnowledgeQA）的答案流是异步的，以流结束为准。飞书流式卡片在长时间问答期间保持活跃，不会被过期清理提前回收。
 - **非流式路径**：渠道 `output_mode=full`、适配器不支持 `StreamSender`、或 `StartStream` 失败时，走 `runQA` 聚合完整答案后 `SendReply` 一次性发送。
@@ -244,9 +244,9 @@ type Adapter interface {
 `im.Service` 是消息处理中枢，职责（见源码注释）：
 
 1. 从 Adapter 接收统一的 `IncomingMessage`；
-2. 为该 IM 渠道解析或创建 WeKnora 会话（Session）；
+2. 为该 IM 渠道解析或创建 OPC 会话（Session）；
 3. 优先分发斜杠命令（不进入 QA 流水线）；
-4. 普通消息调用 WeKnora QA 流水线（`KnowledgeQA` / `AgentQA`）；
+4. 普通消息调用 OPC QA 流水线（`KnowledgeQA` / `AgentQA`）；
 5. 收集流式回答并通过 Adapter 回发。
 
 平台适配器通过 `AdapterFactory` 注册（`internal/container/container.go` 的 `registerIMAdapterFactories`）：

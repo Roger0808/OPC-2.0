@@ -96,7 +96,7 @@ const examples = [
     key: 'mcp',
     command: JSON.stringify({
       mcpServers: {
-        weknora: { command: 'weknora', args: ['--profile', 'weknora', 'mcp', 'serve'] },
+        opc: { command: 'weknora', args: ['--profile', 'opc', 'mcp', 'serve'] },
       },
     }, null, 2),
   },

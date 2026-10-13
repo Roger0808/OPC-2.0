@@ -4,7 +4,7 @@
 
 ## 技术栈与环境要求 {#_1-技术栈与环境要求}
 
-WeKnora 由三个可独立开发的进程组成：
+OPC 由三个可独立开发的进程组成：
 
 | 组件 | 目录 | 语言 / 运行时 | 版本要求（来源） |
 | --- | --- | --- | --- |
@@ -225,7 +225,7 @@ make lint            # go vet
 跨切面的契约/集成测试集中在 `cli/acceptance/`（见 `cli/acceptance/doc.go`）：
 
 - `cli/acceptance/contract/` — envelope JSON 输出形状 golden 测试 + error.code 注册表一致性；
-- `cli/acceptance/e2e/` — 对真实 WeKnora server 的黑盒测试（testscript 风格），需要环境变量指向测试服务器；CI 侧由 `.github/workflows/cli-e2e.yml` 承载，**按需触发**（`workflow_dispatch` 手动，或给 PR 打 `acceptance-e2e` 标签），使用 secrets `WEKNORA_E2E_HOST` / `WEKNORA_E2E_TOKEN`。
+- `cli/acceptance/e2e/` — 对真实 OPC server 的黑盒测试（testscript 风格），需要环境变量指向测试服务器；CI 侧由 `.github/workflows/cli-e2e.yml` 承载，**按需触发**（`workflow_dispatch` 手动，或给 PR 打 `acceptance-e2e` 标签），使用 secrets `WEKNORA_E2E_HOST` / `WEKNORA_E2E_TOKEN`。
 
 ### tests/ 目录与前端测试 {#_4-4-tests-目录与前端测试}
 
@@ -365,7 +365,7 @@ chunker 提供 `SplitWithDiagnostics()`（`internal/infrastructure/chunker/strat
 `scripts/cloud-image/` 用于在专用、可丢弃的 Linux 制作机上准备分发镜像。常规部署使用[安装部署](../01-getting-started/02-installation.md)，不需要运行这些脚本。
 
 - `prepare.sh` 下载 `WEKNORA_REF` 对应的运行文件、拉取镜像并安装 systemd 服务。该引用还用于设置镜像版本，必须确认对应镜像标签存在。随仓库提供的 systemd 单元固定使用 `/opt/WeKnora`，只修改脚本的目录变量不足以迁移安装位置。
-- `cleanup.sh` 清除制镜像机的数据、密钥、SSH 授权、日志与 Docker 缓存并关机；其影响不限于 WeKnora 目录，只能用于检查过的专用制作机。
+- `cleanup.sh` 清除制镜像机的数据、密钥、SSH 授权、日志与 Docker 缓存并关机；其影响不限于 OPC 目录，只能用于检查过的专用制作机。
 - `firstboot.sh` 在新实例上生成密钥、写入 `.env` 并启动 Compose；完成后禁用首启服务，不会自删除脚本。
 
 制镜像前需检查脚本与所选版本是否匹配。分发前必须用新实例验证启动、服务健康和密钥独立性；本说明不代表当前脚本已通过特定云平台的部署或上架验收。

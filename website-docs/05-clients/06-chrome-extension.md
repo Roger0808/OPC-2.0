@@ -2,12 +2,12 @@
 
 「知识管理助手」Chrome 插件支持在网页侧边栏向知识库提问、剪藏当前页面，以及保存 Markdown 笔记。
 
-插件可从 [Chrome 应用商店](https://chromewebstore.google.com/detail/jpemjbopikggjlmikmclgbmkhhopjdgd)安装，需要连接已有的 WeKnora 服务。导入的内容保存在所连接的实例中。
+插件可从 [Chrome 应用商店](https://chromewebstore.google.com/detail/jpemjbopikggjlmikmclgbmkhhopjdgd)安装，需要连接已有的 OPC 服务。导入的内容保存在所连接的实例中。
 
 <Screenshot
   src="/screenshots/chrome-extension.png"
-  caption="Chrome 插件：网页侧边栏问答与内容剪藏"
-  hint="展示插件侧边栏在某个网页上展开的样子（问答面板与知识库选择器），以及剪藏时的区域选择。" />
+  caption="Chrome 插件接入：核心功能、安装与连接步骤"
+  hint="展示「设置 → Chrome 插件」中的功能介绍与连接步骤。" />
 
 ## 主要功能 {#能做什么}
 
@@ -23,7 +23,7 @@
 在「设置 → 发布集成 → Chrome 插件」查看连接指引，并复制当前实例的 API 地址。按以下步骤完成连接：
 
 1. **获取 API 凭证**：在「设置 → 发布集成 → API 集成」复制 API Key 与 API 地址（引导页的「打开 API 信息」按钮会直接跳转到这里）。建议单独建一个 Key 并按需收窄能力（至少需要检索与入库相关能力，见[租户、用户与认证授权](../03-features/01-tenant-auth.md)的 API Key 章节）；
-2. **桌面版建议先固定端口**：用 WeKnora 桌面版时，在「API 集成」页设一个固定端口（例如 37841）。否则每次启动端口变化，插件会连不上；
+2. **桌面版建议先固定端口**：用 OPC 桌面版时，在「API 集成」页设一个固定端口（例如 37841）。否则每次启动端口变化，插件会连不上；
 3. **安装插件**：从 Chrome 应用商店安装；
 4. **在插件里连接**：打开插件设置，选「企业/开发者」模式，填入 API 地址与 API Key。
 

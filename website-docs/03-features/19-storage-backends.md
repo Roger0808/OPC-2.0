@@ -10,8 +10,8 @@
 
 <Screenshot
   src="/screenshots/settings-storage-backends.png"
-  caption="存储后端设置：多实例列表、默认实例与连通性测试"
-  hint="展示已注册的存储后端卡片（provider、状态、默认标记）与新建/编辑表单，含「测试连接」结果。" />
+  caption="存储后端设置：默认实例与添加入口"
+  hint="展示已注册的存储后端卡片、默认标记与「添加存储实例」入口。" />
 
 ## 注册和选择存储后端 {#怎么配}
 

@@ -27,24 +27,24 @@ const withAvailability = (slide: SlideSource): GallerySlide => {
 };
 const releaseSlides = [
   { name: "本机浏览器", icon: "browser", shots: [
-    { label: "执行任务", icon: "browser", image: "local-browser-task", alt: "WeKnora 实际界面：智能推理对话正在操作本机浏览器，对话中显示任务预览与暂停、继续、结束控制" },
-    { label: "连接扩展", icon: "plug", image: "browser-connection", alt: "WeKnora 实际界面：工具箱的浏览器连接页，BrowserSkill 扩展已连接并列出智能体可执行的网页操作" },
+    { label: "配对入口", icon: "browser", image: "local-browser-task", alt: "OPC 实际界面：浏览器扩展安装、配对入口与使用步骤" },
+    { label: "连接扩展", icon: "plug", image: "browser-connection", alt: "OPC 实际界面：工具箱的浏览器连接页，当前尚未配对" },
   ], title: "操作你电脑上的浏览器", description: "借助腾讯开源的 BrowserSkill 扩展，智能体直接在你的 Chrome 或 Edge 中打开网页、填写表单；遇到登录或验证码时交给你。", link: guide("05-clients/09-local-browser"), external: { label: "BrowserSkill", href: "https://github.com/Tencent/BrowserSkill", logo: "browserskill.png" } },
-  { name: "MCP Server", icon: "plug", image: "mcp-server-endpoint", title: "把知识库发布给其他 AI 工具", description: "为空间创建 MCP 端点，Claude、Cursor 等客户端连上即可检索知识库和提问。", alt: "WeKnora 实际界面：MCP 端点的连接信息，包含端点地址与 Cursor、Claude Desktop 的 mcpServers 配置", link: guide("03-features/08-mcp") },
-  { name: "对话控制", icon: "branch", image: "chat-steer-queue", title: "随时调整进行中的对话", description: "回答中途可以补充要求，也能从任意一次提问分叉或回滚；生成的文件统一收在「产物」页。", alt: "WeKnora 实际界面：回答生成期间，输入框上方排队等待的补充要求", link: guide("03-features/18-chat-experience") },
+  { name: "MCP Server", icon: "plug", image: "mcp-server-endpoint", title: "把知识库发布给其他 AI 工具", description: "为空间创建 MCP 端点，Claude、Cursor 等客户端连上即可检索知识库和提问。", alt: "OPC 实际界面：已停用的虚构 MCP 端点与新建入口", link: guide("03-features/08-mcp") },
+  { name: "对话控制", icon: "branch", image: "chat-steer-queue", title: "随时调整进行中的对话", description: "回答中途可以补充要求，也能从任意一次提问分叉或回滚；生成的文件统一收在「产物」页。", alt: "OPC 实际界面：虚构知识整理会话中的分叉、回滚与回答操作", link: guide("03-features/18-chat-experience") },
 ].map(withAvailability);
 const wikiSlides = [
-  { name: "知识图谱", icon: "channels", image: "wiki-graph", title: "顺着链接，查看相关知识", description: "在知识图谱中查看页面之间的关系。点击条目，即可阅读相关内容。", alt: "Wiki 知识图谱：日常费用报销条目与相关页面的链接关系，右侧展示条目详情" },
+  { name: "知识图谱", icon: "channels", image: "wiki-graph", title: "顺着链接，查看相关知识", description: "在知识图谱中查看页面之间的关系。点击条目，即可阅读相关内容。", alt: "Wiki 知识图谱：虚构员工手册、产品与知识管理页面的链接关系" },
   { name: "页面浏览", icon: "wiki", image: "wiki-browser", title: "按主题整理，保留出处", description: "开启 Wiki 后，从知识库文档中提取人物、产品和概念，生成带来源引用的页面，按目录浏览。", alt: "Wiki 浏览器：按主题组织的目录、年假页面、关联条目和原始文档引用" },
   { name: "版本历史", icon: "history", image: "wiki-revision-history", title: "随时编辑，改动可回溯", description: "直接修订页面，也可让智能体协助维护。查看版本差异，必要时恢复到历史内容。", alt: "Wiki 版本历史：年假页面的历史版本列表、内容差异和回滚入口" },
 ].map(withAvailability);
 const sandboxSlides = [
-  { name: "会话级沙箱", icon: "sandbox", image: "skill-sandbox-chat", title: "在同一沙箱中继续执行任务", description: "支持 Docker、E2B、Cube。同一会话的多轮任务共用一个工作区，生成的文件可预览和下载。", alt: "WeKnora 实际界面：智能体根据知识库生成 Word 文档，并在对话旁打开产物预览", link: guide("03-features/22-skills-sandbox") },
+  { name: "会话级沙箱", icon: "sandbox", image: "skill-sandbox-chat", title: "在同一沙箱中继续配对入口", description: "支持 Docker、E2B、Cube。同一会话的多轮任务共用一个工作区，生成的文件可预览和下载。", alt: "OPC 实际界面：预置的虚构知识整理会话，未调用模型或沙箱", link: guide("03-features/22-skills-sandbox") },
   { name: "图形桌面与终端", icon: "monitor", shots: [
-    { label: "图形桌面", icon: "monitor", image: "sandbox-desktop", alt: "WeKnora 实际界面：对话右侧沙箱面板的桌面页签，显示沙箱内的 XFCE 图形桌面与文件管理器" },
-    { label: "交互终端", icon: "terminal", image: "sandbox-terminal", alt: "WeKnora 实际界面：对话右侧的沙箱终端，列出工作区 output 目录中生成的 Word 文件" },
+    { label: "沙箱配置", icon: "monitor", image: "sandbox-desktop", alt: "OPC 实际界面：沙箱配置页，当前尚未配置沙箱" },
+    { label: "交互终端", icon: "terminal", image: "sandbox-terminal", alt: "OPC 实际界面：沙箱终端面板，当前会话没有运行中的沙箱" },
   ], title: "打开桌面和终端，看清每一步", description: "在对话旁打开图形桌面或交互终端，查看智能体的每一步操作，必要时亲自接手。", link: guide("03-features/22-skills-sandbox") },
-  { name: "技能目录", icon: "skills", image: "skill-catalog", title: "安装、管理和复用技能", description: "从 ClawHub、SkillHub、Git 或 ZIP 安装技能，在空间内统一管理和复用。", alt: "WeKnora 实际界面：工具箱的技能管理页，列出 docx、pptx、pdf 技能及其安装到的沙箱", link: guide("03-features/22-skills-sandbox") },
+  { name: "技能目录", icon: "skills", image: "skill-catalog", title: "安装、管理和复用技能", description: "从 ClawHub、SkillHub、Git 或 ZIP 安装技能，在空间内统一管理和复用。", alt: "OPC 实际界面：工具箱中尚未安装到沙箱的虚构演示技能", link: guide("03-features/22-skills-sandbox") },
 ].map(withAvailability);
 
 export default function Home() {
@@ -57,7 +57,7 @@ export default function Home() {
         <div className={s.heroGrid}>
           <h1 id="hero-title">帮你找到答案，<br /><em>并将知识付诸实践。</em></h1>
           <div className={s.heroAside}>
-            <p className={s.eyebrow}>TENCENT OPEN SOURCE · WEKNORA</p>
+            <p className={s.eyebrow}>TENCENT OPEN SOURCE · OPC</p>
             <p className={s.heroDescription}>腾讯开源的企业级知识管理框架。<br />汇集团队资料，用于知识问答、任务执行和 Wiki 整理。</p>
             <div className={s.actions}><a className={s.primary} href="#get-started">开始使用 <Icon name="arrow" /></a><a className={s.secondary} href={repo} target="_blank" rel="noreferrer"><Icon name="github" /> GitHub</a></div>
             <p className={s.heroNote}>RAG 问答 / Agent 推理 / 自动 Wiki</p>
@@ -115,7 +115,7 @@ export default function Home() {
           <article className={s.startCard}>
             <div className={s.startLabel}><Image className={s.startBrand} src={`${homeAssets}/brands/tencent-cloud.ico`} alt="腾讯云 Logo" width={32} height={32} /><span>云端部署</span></div>
             <h3>腾讯云轻量应用服务器</h3>
-            <p>通过应用模板部署 WeKnora，在自己的云服务器上运行。</p>
+            <p>通过应用模板部署 OPC，在自己的云服务器上运行。</p>
             <a className={s.textLink} href="https://mc.tencent.com/s69nKCVz" target="_blank" rel="noreferrer">前往腾讯云部署 <Icon name="external" /></a>
           </article>
           <article className={s.startCard}>
@@ -127,6 +127,6 @@ export default function Home() {
         </div>
       </section>
     </main>
-    <footer className={`${s.shell} ${s.footer}`}><a className={s.brand} href="/" aria-label="WeKnora 首页"><BrandLogo /></a><p>Tencent Open Source · MIT License</p><nav aria-label="页脚导航"><a href={docs}>文档</a><a href={repo} target="_blank" rel="noreferrer">GitHub <Icon name="external" /></a><a href={`${repo}/blob/main/CHANGELOG.md`} target="_blank" rel="noreferrer">更新日志</a></nav></footer>
+    <footer className={`${s.shell} ${s.footer}`}><a className={s.brand} href="/" aria-label="OPC 首页"><BrandLogo /></a><p>Tencent Open Source · MIT License</p><nav aria-label="页脚导航"><a href={docs}>文档</a><a href={repo} target="_blank" rel="noreferrer">GitHub <Icon name="external" /></a><a href={`${repo}/blob/main/CHANGELOG.md`} target="_blank" rel="noreferrer">更新日志</a></nav></footer>
   </div>;
 }

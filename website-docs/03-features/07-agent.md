@@ -15,13 +15,13 @@
 
 <Screenshot
   src="/screenshots/agent-editor.png"
-  caption="自定义 Agent 配置：模式、模型、知识范围与工具"
-  hint="展示 Agent 编辑弹窗，含模式选择、模型选择、知识库范围、联网搜索开关与 MCP 工具勾选。" />
+  caption="智能体配置：基本信息与运行模式"
+  hint="当前 OPC 本地界面截图；演示资料为虚构数据，不代表模型、沙箱或外部服务的执行结果。" />
 
 <Screenshot
   src="/screenshots/agent-chat.png"
-  caption="Agent 对话：推理过程与工具调用时间线"
-  hint="展示一轮 Agent 回答，包含展开的思考步骤、工具调用卡片与最终答案的引用。" />
+  caption="智能体对话：虚构知识整理示例与来源引用"
+  hint="当前 OPC 本地界面截图；演示资料为虚构数据，不代表模型、沙箱或外部服务的执行结果。" />
 
 配置决定智能体可访问的资料与工具，实际调用仍受当前用户或渠道的权限约束。
 

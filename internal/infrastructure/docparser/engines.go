@@ -163,7 +163,7 @@ type weKnoraCloudEngine struct{}
 
 func (e *weKnoraCloudEngine) Name() string { return WeKnoraCloudEngineName }
 
-func (e *weKnoraCloudEngine) Description() string { return "WeKnoraCloud document reader" }
+func (e *weKnoraCloudEngine) Description() string { return "OPC Cloud document reader" }
 
 func (e *weKnoraCloudEngine) FileTypes(_ bool) []string {
 	return []string{"docx", "doc", "pdf", "md", "markdown", "xlsx", "xls", "pptx", "ppt"}

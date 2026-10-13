@@ -1,6 +1,6 @@
 # 本机浏览器接入与部署
 
-WeKnora 通过 BrowserSkill daemon 和 [BrowserSkill](https://github.com/Tencent/BrowserSkill) 浏览器扩展，将用户电脑上的浏览器接入智能推理对话。扩展支持 Chrome 和 Microsoft Edge（基于 Chromium 125 及以上），其他 Chromium 浏览器不保证兼容。浏览器在用户电脑上运行，daemon 在 WeKnora app 一侧运行，无需技能沙箱。网页剪藏和侧边栏知识库问答使用另一个[知识管理助手插件](06-chrome-extension.md)。
+OPC 通过 BrowserSkill daemon 和 [BrowserSkill](https://github.com/Tencent/BrowserSkill) 浏览器扩展，将用户电脑上的浏览器接入智能推理对话。扩展支持 Chrome 和 Microsoft Edge（基于 Chromium 125 及以上），其他 Chromium 浏览器不保证兼容。浏览器在用户电脑上运行，daemon 在 OPC app 一侧运行，无需技能沙箱。网页剪藏和侧边栏知识库问答使用另一个[知识管理助手插件](06-chrome-extension.md)。
 
 ## 安装扩展
 
@@ -22,7 +22,7 @@ WeKnora 通过 BrowserSkill daemon 和 [BrowserSkill](https://github.com/Tencent
 <Screenshot
   src="/screenshots/browser-connection.png"
   caption="工具箱 → 浏览器连接：配对链接、连接状态与扩展安装入口"
-  hint="已配对且在线的状态：标签上的连接状态、设备信息、配对链接区、Chrome/Edge 商店入口与「手动安装（备用）」、「在侧边栏显示连接状态」开关；侧边栏工具箱旁可见绿色状态圆点。" />
+  hint="展示尚未配对时的扩展安装、配对入口、搜索指令和使用步骤。" />
 
 连接状态显示在「浏览器连接」标签上（已连接、离线或未配对）。已配对时，侧边栏「工具箱」右侧的浏览器小图标也会用圆点标出状态：绿色为已连接，橙色为离线。不需要时可以在「浏览器连接」页关闭「在侧边栏显示连接状态」，该设置只保存在当前浏览器。同一页还可以设置「浏览器搜索指令」，指定偏好的搜索引擎和搜索地址。
 

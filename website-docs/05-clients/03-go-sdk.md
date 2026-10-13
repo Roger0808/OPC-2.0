@@ -309,7 +309,7 @@ v0.8.2 起的两处请求字段变化：
 
 `MCPService` 列表项带 `Catalog`（工具数、是否过期、同步时间）和 `UsageInstructions` 字段。
 
-### MCP 端点（WeKnora 作为 MCP Server）— `client/mcp_endpoint.go`
+### MCP 端点（OPC 作为 MCP Server）— `client/mcp_endpoint.go`
 
 | 方法 | 说明 |
 |---|---|

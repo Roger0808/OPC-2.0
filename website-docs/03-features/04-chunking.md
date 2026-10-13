@@ -29,7 +29,7 @@
 
 ## 分块机制参考
 
-WeKnora 的分块在 **Go 侧**完成（`internal/infrastructure/chunker` 包），采用"文档画像 → 分层策略 → 结果校验 → 逐级回退"的自适应架构；Python 侧 `docreader/splitter/` 保留了同源的递归分块器供 docreader sidecar 使用（生产主路径是 Go 实现，`docreader/splitter/splitter.py` 注释明确说明二者默认值已对齐）。
+OPC 的分块在 **Go 侧**完成（`internal/infrastructure/chunker` 包），采用"文档画像 → 分层策略 → 结果校验 → 逐级回退"的自适应架构；Python 侧 `docreader/splitter/` 保留了同源的递归分块器供 docreader sidecar 使用（生产主路径是 Go 实现，`docreader/splitter/splitter.py` 注释明确说明二者默认值已对齐）。
 
 ### 配置模型 {#_1-配置模型}
 

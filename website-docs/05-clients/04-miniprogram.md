@@ -1,6 +1,6 @@
 # 微信小程序客户端
 
-微信小程序提供移动端知识库问答和网页导入入口，连接已有 WeKnora 服务。源码位于 `miniprogram/`。使用时先配置 API 地址和 API Key，再选择知识库：
+微信小程序提供移动端知识库问答和网页导入入口，连接已有 OPC 服务。源码位于 `miniprogram/`。使用时先配置 API 地址和 API Key，再选择知识库：
 
 - 将网页 URL 导入所选知识库。
 - 围绕所选知识库发起问答。
@@ -21,10 +21,10 @@
 - **默认值**：`miniprogram/app.js` 在 `onLaunch` 中若发现本地无设置，会写入默认 `baseUrl: "http://localhost:8080"`、空 `apiKey` 与 `locale: "zh"`。默认值仅便于本地开发，实际使用必须在设置页改为真实地址。
 - **读写与规范化**：`miniprogram/utils/config.js` 提供 `getSettings()` / `saveSettings()`，通过 `normalizeBaseUrl()` 去除首尾空白与末尾 `/`，通过 `normalizeLocale()` 把非 `en` 的值一律归为 `zh`。
 - **认证方式为 API Key**：`miniprogram/utils/request.js` 中所有请求统一携带请求头：
-  - `X-API-Key: <用户填写的 API Key>`（在 WeKnora「设置 → 发布集成 → API 集成」获取，形如 `sk-...`）；
+  - `X-API-Key: <用户填写的 API Key>`（在 OPC「设置 → 发布集成 → API 集成」获取，形如 `sk-...`）；
   - `X-Request-ID: mp-<时间戳>-<随机串>`（便于服务端追踪）；
   - `Content-Type: application/json`。
-- **前置校验**：`baseUrl` 或 `apiKey` 任一缺失时，请求会直接以错误 Promise 拒绝，提示按当前语言显示（如「请先配置 WeKnora API 地址。」/「请先配置 WeKnora API Key。」）；`pages/index/index.js` 的 `onShow` 也会据此显示引导用户去设置页的提示。
+- **前置校验**：`baseUrl` 或 `apiKey` 任一缺失时，请求会直接以错误 Promise 拒绝，提示按当前语言显示（如「请先配置 OPC API 地址。」/「请先配置 OPC API Key。」）；`pages/index/index.js` 的 `onShow` 也会据此显示引导用户去设置页的提示。
 - **AppID 配置**：复制 `miniprogram/project.private.config.json.example` 为 `project.private.config.json` 并填入自己的 AppID（示例文件内容为 `{"appid": "your-wechat-mini-program-appid"}`）。注意：当前共享的 `project.config.json` 中带有一个 `appid` 字段，使用自己的小程序时以私有配置覆盖它。
 
 调用到的后端接口（均定义在 `miniprogram/utils/request.js`）：
@@ -46,11 +46,11 @@
 
 小程序无需编译步骤（原生开发、无构建工具链），直接用微信开发者工具（WeChat DevTools）打开即可：
 
-1. **导入项目**：在微信开发者工具中选择「导入项目」，目录指向仓库的 `miniprogram/`。工具会读取 `project.config.json`（项目名 "WeKnora Mini Program"）。
+1. **导入项目**：在微信开发者工具中选择「导入项目」，目录指向仓库的 `miniprogram/`。工具会读取 `project.config.json`（项目名 "OPC Mini Program"）。
 2. **配置 AppID**：复制 `miniprogram/project.private.config.json.example` 为 `project.private.config.json`，将 `appid` 替换为实际小程序 AppID。`project.private.config.json` 属于个人私有配置，已被 `.gitignore` 忽略，不应提交。
-3. **配置后端连接**：运行后进入「设置」tab，填写 API Base URL（如 `https://weknora.example.com`）与 WeKnora API Key（「设置 → 发布集成 → API 集成」中获取），按需切换界面语言，保存。
-4. **本地调试注意**：`project.config.json` 开启了 `urlCheck: true`，开发者工具默认会拦截 `localhost` 等非合法域名请求。本地测试可在 DevTools 中勾选「不校验合法域名」，或通过 HTTPS 开发域名暴露 WeKnora 服务。
-5. **发布**：正式发布前，需在微信公众平台的小程序管理后台，把 WeKnora API 域名（必须为 HTTPS）加入 request 合法域名（request 域名白名单）；随后在开发者工具中点击「上传」提交代码，再在管理后台提交审核并发布。
+3. **配置后端连接**：运行后进入「设置」tab，填写 API Base URL（如 `https://weknora.example.com`）与 OPC API Key（「设置 → 发布集成 → API 集成」中获取），按需切换界面语言，保存。
+4. **本地调试注意**：`project.config.json` 开启了 `urlCheck: true`，开发者工具默认会拦截 `localhost` 等非合法域名请求。本地测试可在 DevTools 中勾选「不校验合法域名」，或通过 HTTPS 开发域名暴露 OPC 服务。
+5. **发布**：正式发布前，需在微信公众平台的小程序管理后台，把 OPC API 域名（必须为 HTTPS）加入 request 合法域名（request 域名白名单）；随后在开发者工具中点击「上传」提交代码，再在管理后台提交审核并发布。
 
 ### 测试
 
@@ -76,7 +76,7 @@ npm test    # 实际执行 node --test ../tests/miniprogram/*.test.js
 - `miniprogram/app.js` — 标准的 `App({...})` 入口，`onLaunch` 时向本地存储写入默认设置；
 - `miniprogram/app.json` — 标准小程序全局配置（`pages`、`window`、`tabBar`）；
 - `miniprogram/app.wxss` — 全局样式；页面均为 `js / wxml / wxss / json` 四件套；
-- `miniprogram/package.json` — 包名 `weknora-miniprogram`（version `0.1.0`），`description` 为 "WeChat Mini Program plugin for WeKnora"，**没有 `dependencies`**，仅有一个测试脚本（见下文「测试」）；
+- `miniprogram/package.json` — 包名 `weknora-miniprogram`（version `0.1.0`），`description` 为 "WeChat Mini Program plugin for OPC"，**没有 `dependencies`**，仅有一个测试脚本（见下文「测试」）；
 - `miniprogram/project.config.json` — `compileType: "miniprogram"`，`libVersion: "latest"`（基础库使用最新版），编译选项开启 `es6`、`enhance`、`postcss`、`minified`、`minifyWXSS`、`minifyWXML`，并开启 `urlCheck: true`（合法域名校验）。该文件目前带有 `appid` 字段，自己的 AppID 通过私有配置文件提供（见「构建与发布流程」）。
 
 全局窗口样式：导航栏标题 `WeKnora`，背景色 `#0d3b2a`（深绿），文字白色。
@@ -107,7 +107,7 @@ flowchart LR
     S["设置页<br/>(baseUrl + API Key + 语言)"] -->|"wx.setStorageSync(weknora_settings)"| C["utils/config.js"]
     K["知识库页<br/>(pages/index)"] -->|"listKnowledgeBases / createKnowledgeFromURL"| R["utils/request.js<br/>(X-API-Key 头)"]
     Q["问答页<br/>(pages/chat)"] -->|"createSession / knowledgeChat"| R
-    R -->|"wx.request"| B["WeKnora 后端<br/>/api/v1/*"]
+    R -->|"wx.request"| B["OPC 后端<br/>/api/v1/*"]
     B -->|"SSE 文本"| P["utils/sse.js<br/>collectAnswerFromSSE"]
     P --> Q
     C --> R
