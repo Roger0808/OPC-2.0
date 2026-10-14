@@ -1,13 +1,14 @@
 import type { CustomAgentConfig } from '../api/agent'
 import type { PromptTemplate, PromptTemplatesConfig } from '../api/system'
+import { serverPromptText } from './promptTemplateBranding'
 
 const systemTemplates = (config: CustomAgentConfig, templates: PromptTemplatesConfig) =>
   config.agent_mode === 'smart-reasoning' ? templates.agent_system_prompt || [] : templates.system_prompt
 
 function matchingTemplate(body: string | undefined, id: string | undefined, list: PromptTemplate[]) {
   // Preserve the selected identity if multiple templates have identical bodies.
-  return list.find(t => t.id === id && t.content === body)
-    || list.find(t => t.content === body && !!body)
+  return list.find(t => t.id === id && serverPromptText(t, 'content') === body)
+    || list.find(t => serverPromptText(t, 'content') === body && !!body)
 }
 
 // The textarea shows effective content. Persist untouched templates as references;
@@ -35,8 +36,8 @@ export function serializeAgentPrompts(config: CustomAgentConfig, templates: Prom
     || templates.fallback.find(t => t.mode === 'model')
   const fixed = templates.fallback.find(t => t.default && t.mode !== 'model')
   for (const [field, value] of [
-    ['rewrite_prompt_system', rewrite?.content], ['rewrite_prompt_user', rewrite?.user],
-    ['fallback_prompt', fallback?.content], ['fallback_response', fixed?.content],
+    ['rewrite_prompt_system', serverPromptText(rewrite, 'content')], ['rewrite_prompt_user', serverPromptText(rewrite, 'user')],
+    ['fallback_prompt', serverPromptText(fallback, 'content')], ['fallback_response', serverPromptText(fixed, 'content')],
   ] as const) {
     if (value && result[field] === value) result[field] = ''
   }

@@ -1,5 +1,6 @@
 import { get, post, put, del, patch, postUpload } from '@/utils/request'
 import type { CreatedTenantAPIKey, TenantAPIKey, TenantAPIKeyCapability } from '@/api/tenant'
+import { brandPromptTemplates } from '../../utils/promptTemplateBranding'
 
 export interface CreatePlatformAPIKeyPayload {
   name: string
@@ -97,8 +98,10 @@ export function getSystemInfo(): Promise<{ data: SystemInfo }> {
   return get('/api/v1/system/info')
 }
 
-export function getPromptTemplates(): Promise<{ data: PromptTemplatesConfig }> {
-  return get('/api/v1/tenants/kv/prompt-templates')
+export async function getPromptTemplates(): Promise<{ data: PromptTemplatesConfig }> {
+  const response = await get<{ data: PromptTemplatesConfig }>('/api/v1/tenants/kv/prompt-templates')
+  if (response.data) response.data = brandPromptTemplates(response.data)
+  return response
 }
 
 export interface ParserEngineInfo {

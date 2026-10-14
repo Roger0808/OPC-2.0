@@ -1,0 +1,1 @@
+Run scripts/build.sh to embed the frontend before packaging.
