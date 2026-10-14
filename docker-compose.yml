@@ -40,7 +40,7 @@ services:
       dockerfile: docker/Dockerfile.app
       args:
         - APK_MIRROR_ARG=${APK_MIRROR_ARG:-}
-        - WITH_ANYDOC=${WITH_ANYDOC:-1}
+        - WITH_ANYDOC=${WITH_ANYDOC:-0}
     container_name: WeKnora-app
     cpus: 10.0
     ports:
