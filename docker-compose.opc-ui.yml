@@ -1,0 +1,3 @@
+services:
+  frontend:
+    image: blsh-harbor-acr-registry.cn-beijing.cr.aliyuncs.com/arch/opc-ui:20261013-fc27b1
