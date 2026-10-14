@@ -1834,6 +1834,22 @@ export default {
       script: '脚本',
       instructions: '技能说明'
     },
+    attachmentTarget: {
+      list: '全部附件',
+      file: '附件',
+      images: '{name} 中的图片',
+      imagesUnnamed: '附件中的图片',
+      image: '{name} 第 {n} 张图片',
+      imageUnnamed: '附件第 {n} 张图片'
+    },
+    imageView: {
+      summary: '已查看「{file}」第 {numbers} 张图片，共 {total} 张',
+      single: '已查看图片「{file}」',
+      descriptionsHeading: '视觉模型的图片描述',
+      imageLabel: '图片 #{n}',
+      noDescription: '未能生成描述',
+      remaining: '还有 {count} 张未查看'
+    },
     sandboxFiles: {
       found: '找到 {count} 个文件',
       empty: '暂无文件',
@@ -2408,6 +2424,9 @@ export default {
     "serverDocumentation": "服务端原始说明",
     "noServerDocumentation": "该 MCP Server 的 initialize 未返回 instructions / serverInfo.description（均为可选字段）。工具说明在下方各工具的 description 里。",
     "policyHint": "工具开关与审批设置即时保存；刷新目录不会覆盖这些设置。",
+    "columnTool": "工具",
+    "columnEnabled": "启用",
+    "columnApproval": "需审批",
     "failed": "工具目录读取失败",
     "setupProgress": "MCP 配置步骤",
     "connection": "连接配置",
@@ -2450,6 +2469,9 @@ export default {
     authTypeApiKey: 'API Key / Token',
     authTypeOAuth: 'OAuth 2.0（首次连接授权）',
     oauthScopes: 'Scopes（可选，空格分隔）',
+    oauthClientId: 'Client ID（可选）',
+    oauthClientIdDesc: '填写在授权服务器预先注册的客户端；留空则自动进行动态客户端注册。更换 Client ID 时请同时更新 Client Secret。',
+    oauthClientSecret: 'Client Secret（可选）',
     oauthAuthorization: '授权状态',
     oauthAuthorized: '已授权',
     oauthRefreshable: 'Token 已过期，将在下次使用时自动刷新',
@@ -3978,7 +4000,8 @@ export default {
     truncatedHint: '回答在模型单次输出上限处被截断，以上为截断前已生成的内容',
     rewind: {
       tooltip: '回滚到这里',
-      confirmBody: '将删除此条之后的对话。从用户消息回滚时会删掉该问题本身，并填回输入框。若有可用检查点，工作区会一并回退。此操作不可撤销。',
+      confirmTitle: '回滚到这里？',
+      confirmBody: '此条之后的对话将被删除；从提问回滚时，该问题会填回输入框。有检查点时工作区也会一并回退，操作不可撤销。',
       confirmButton: '回滚',
       cancelButton: '取消',
       success: '已回滚',
@@ -5321,7 +5344,13 @@ export default {
     mcpStale: '需重新同步',
     belongsToKb: '所属知识库：',
     belongsToOrg: '所属空间：',
-    noCompatibleKbForAgent: '当前智能体的工具与作用域内知识库的能力不匹配，暂无可引用的知识库。'
+    noCompatibleKbForAgent: '当前智能体的工具与作用域内知识库的能力不匹配，暂无可引用的知识库。',
+    tag: '标签',
+    searchPlaceholder: '搜索知识库、文件、技能等',
+    searchInGroup: '在{group}中搜索…',
+    typeToSearch: "在 {'@'} 后继续输入以搜索…",
+    viewAll: '查看全部',
+    back: '返回'
   },
   common: {
     add: '添加',
@@ -6242,6 +6271,7 @@ export default {
       skillTranscriptLive: '安装过程',
       skillTranscriptLiveHint: '正在安装，点击查看过程',
       skillTranscriptTitle: '安装过程',
+      skillTranscriptPrompt: '安装指令',
       skillTranscriptHide: '收起安装过程',
       skillGuidance: {
         placeholder: '补充安装说明，例如需要安装的 CLI、安装文档或环境限制',
@@ -6360,6 +6390,7 @@ export default {
       installedCount: '已安装到 {count} 个沙箱',
       installPanelGroup: '已安装',
       installPanelAvailable: '未安装',
+      installAction: '安装',
       viewInstallProgress: '查看进度',
       manageOnSandbox: '管理沙箱「{name}」上的安装',
       manageDrawerDesc: '在沙箱「{name}」上管理启用、变量和卸载。',
@@ -7816,6 +7847,7 @@ export default {
   },
   menu: {
     sessionInProgress: '会话进行中',
+    sessionUnread: '有新回复',
     knowledgeBase: '知识库',
     agents: '智能体',
     artifacts: '产物',
