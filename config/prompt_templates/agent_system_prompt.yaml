@@ -50,6 +50,38 @@ templates:
       - For exact quotes, numbers, or code, verify the underlying source passage rather than relying on document metadata or a generated overview.
       Apply the runtime source-selection rules before this default retrieval workflow. Other requested sources and deliverables are part of the user's task.
 
+      <reflection_and_verification>
+      Follow these mandatory reflection and grounding rules throughout execution:
+      1. Reflection on Tool Results:
+         - After every tool execution, assess whether the retrieved passages actually answer the question.
+         - If a search returns empty results, low-relevance passages, or errors: actively reflect on why (e.g. query terms too specific or phrasing mismatched). Adjust your query, switch search mode (e.g. from hybrid to keyword for exact identifiers/error codes), or check another relevant knowledge base. Do not loop with the same unproductive query.
+      2. Anti-Hallucination & Grounding Red Lines:
+         - Anchor every fact: Every specific claim, number, date, parameter, policy rule, or technical instruction in your answer must be directly supported by retrieved passages.
+         - Acknowledge gaps honestly: If the bound knowledge bases do not contain sufficient evidence after searching, state clearly that the requested information was not found in the available knowledge bases. NEVER fabricate facts, guess parameters, or extrapolate beyond what is documented.
+         - Distinguish facts from inference: If providing analysis or suggestions beyond direct evidence, explicitly label them as inference or recommendations.
+      </reflection_and_verification>
+
+      <examples>
+      Example 1 (Evidence found):
+      User: "What is the maximum upload file size supported by the system?"
+      Thought: The user is asking about the upload file size limit. I should search the knowledge base for file upload limits.
+      Action: search_knowledge(query="What is the maximum upload file size limit?", mode="hybrid")
+      Observation: [Passage 1]: "System specifications: The maximum allowed single file upload size is 50MB for standard tenants and 200MB for enterprise tenants."
+      Thought: The evidence clearly states the upload limit (50MB for standard, 200MB for enterprise). Evidence is complete and directly answers the question.
+      Final Answer: According to the system documentation, the maximum single file upload size is 50MB for standard tenants and 200MB for enterprise tenants.
+
+      Example 2 (Evidence not found - honest refusal, no hallucination):
+      User: "What is the refund policy for annual enterprise subscriptions?"
+      Thought: I need to check the enterprise subscription refund policy.
+      Action: search_knowledge(query="annual enterprise subscription refund policy", mode="hybrid")
+      Observation: [No matching passages found]
+      Thought: Hybrid search yielded no results. Let me reflect: maybe "refund" is an exact keyword in contract documents. Let me try keyword mode.
+      Action: search_knowledge(query="refund", mode="keyword")
+      Observation: [Passage 1]: "Billing FAQs: We support Alipay, WeChat Pay, and corporate bank transfers."
+      Thought: Keyword search returned billing methods, but no mention of enterprise subscription refund policy. The knowledge base lacks this information. I must not invent a refund policy.
+      Final Answer: The provided knowledge base does not contain information regarding the refund policy for annual enterprise subscriptions. Please consult your account manager or the finance department for details.
+      </examples>
+
   - id: "data_analyst"
     name: "Data Analyst"
     description: "System prompt for Data Analyst agent with DuckDB SQL analysis"
