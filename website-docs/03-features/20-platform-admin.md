@@ -16,7 +16,7 @@
 <Screenshot
   src="/screenshots/settings-system-admin.png"
   caption="平台控制台：系统设置、任务队列、平台 API Key 与系统审计日志"
-  hint="以系统管理员身份打开「设置」，展示侧栏底部四个仅系统管理员可见的分区，正文可用系统设置页。" />
+  hint="以系统管理员身份打开「设置」，展示侧栏的系统设置、模型目录、任务队列、平台 API Key、系统审计日志五个仅系统管理员可见的分区，正文可用系统设置页。" />
 
 ## 设置首个系统管理员 {#_1-第一个系统管理员怎么来}
 
@@ -47,9 +47,17 @@
 - **重置用户密码**（`POST /system/admin/users/reset-password`）：替换目标用户的本地密码并吊销其全部会话。**不能给自己重置**——自助改密码仍要求提供旧密码；
 - **批量套用默认存储配额**（`POST /system/admin/tenants/apply-default-storage-quota`）：把当前的默认配额写到所有已存在的空间上。该操作更新已有空间的配额数据。
 
+### 管理平台用户
+
+「设置 → 系统设置 → 用户管理」集中展示整个部署的用户，可创建账号、启用或停用账号、重置密码，以及授予或撤销系统管理员身份。停用账号会立即吊销其登录会话；不能停用自己或最后一位仍启用的系统管理员。用户列表不包含密码或密码哈希。
+
+<Screenshot src="/screenshots/system-user-management.png" caption="系统设置：平台用户管理" hint="展示用户列表、启用状态、管理员标记与操作菜单；隐藏真实邮箱，保留创建用户和分页入口。" />
+
+注册模式分为开放注册、仅限邀请注册、禁止注册三档；`invite_only` 对应禁止注册，需凭邀请新建账号时选择 `invite_register`。OIDC 与管理员创建账号不受密码注册档位限制。
+
 ### 创建用户
 
-自 v0.8.2 起，系统管理员可在「设置 → 系统设置 → 账户与访问」中点击「创建用户」开通本地账号：填写用户名（2–50 字符）和邮箱，保持「自动生成随机密码」开启，或关闭后手动填写符合密码策略的密码。适用于关闭公开注册后由管理员统一开户的场景。空间分配遵循 `auth.default_tenant_mode`：`create_personal` 创建个人空间，`tenantless` 等待用户加入空间。
+自 v0.8.2 起，系统管理员可在「设置 → 系统设置 → 用户管理」中点击「创建用户」开通本地账号：填写用户名（2–50 字符）和邮箱，保持「自动生成随机密码」开启，或关闭后手动填写符合密码策略的密码。适用于关闭公开注册后由管理员统一开户的场景。空间分配遵循 `auth.default_tenant_mode`：`create_personal` 创建个人空间，`tenantless` 等待用户加入空间。
 
 <Screenshot
   src="/screenshots/system-admin-create-user.png"
@@ -66,7 +74,7 @@
 
 | 键 | 类型 | 默认 | 生效时机 |
 | --- | --- | --- | --- |
-| `auth.registration_mode` | `self_serve` / `invite_only` | `self_serve` | 立即 |
+| `auth.registration_mode` | `self_serve` / `invite_register` / `invite_only` | `self_serve` | 立即 |
 | `auth.default_tenant_mode` | `create_personal` / `tenantless` | `create_personal` | 只影响之后注册的新用户 |
 | `tenant.self_service_creation_enabled` | bool | `true` | 立即 |
 | `tenant.max_owned_per_user` | int | `10`（0 = 用内置默认，负数 = 关闭限额） | 每次建空间时读取 |

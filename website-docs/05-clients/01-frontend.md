@@ -8,7 +8,7 @@ OPC 的 Web 前端是一个基于 **Vue 3 + TypeScript + Vite** 的单页应用�
 
 ## 技术栈总览
 
-依据 `frontend/package.json`（版本 0.8.2）：
+依据 `frontend/package.json`（版本 0.8.3）：
 
 | 类别 | 选型 | 版本 | 说明 |
 | --- | --- | --- | --- |
