@@ -53,13 +53,17 @@ ENV GO_VERSION=${GO_VERSION_ARG}
 # Python docreader). Default on so Hub / compose images ship a working
 # engine; pass WITH_ANYDOC=0 to skip the Rust toolchain (~few minutes and
 # ~1 GB of build-stage layers).
-ARG WITH_ANYDOC=0
+ARG WITH_ANYDOC=1
 ENV RUSTUP_HOME=/usr/local/rustup CARGO_HOME=/usr/local/cargo
 ENV PATH=/usr/local/cargo/bin:$PATH
+ENV RUSTUP_DIST_SERVER=https://rsproxy.cn
+ENV RUSTUP_UPDATE_ROOT=https://rsproxy.cn/rustup
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/usr/local/cargo/git \
     if [ "$WITH_ANYDOC" = "1" ]; then \
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+        mkdir -p /usr/local/cargo && \
+        printf '[source.crates-io]\nreplace-with = "rsproxy-sparse"\n[source.rsproxy-sparse]\nregistry = "sparse+https://rsproxy.cn/index/"\n[net]\ngit-fetch-with-cli = false\n' > /usr/local/cargo/config.toml && \
+        (curl --proto '=https' --tlsv1.2 -sSf https://rsproxy.cn/rustup-init.sh || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs) \
             | sh -s -- -y --profile minimal --default-toolchain stable && \
         ./scripts/build-anydoc-lib.sh; \
     fi
